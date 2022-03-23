@@ -163,6 +163,177 @@ if(!file_exists($path)){
 }
 file_put_contents($file, $logicContentContentTemp);
 
+if($formType == 1){
+    foreach ($viewTemplate as $item){
+        copy($item, $tempDir);
+        $viewContentTemp = file_get_contents($tempDir);
+
+
+        // 替换view表格字段
+        $viewFieldsTemplate = implode(PHP_EOL, $viewFields);
+        $viewContentTemp = str_replace('<!--template_view_fields_start,template_view_fields_end-->', $viewFieldsTemplate, $viewContentTemp);
+
+        // 替换表单
+        $formTemplate = '<div class="modal fade" id="preserve_modal" tabindex="-1" role="dialog" aria-labelledby="preserve_modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="preserve_form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="preserve_title">添加</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i aria-hidden="true" class="ki ki-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+<!--template_form_fields_start,template_form_fields_end-->
+                    <div class="form-group">
+                        <label>名称</label>
+                        <input type="number" id="name" name="name" class="form-control" placeholder="请输入名称"/>
+                    </div>
+                    <div class="form-group">
+                        <label>状态 <span class="text-danger">*</span></label>
+                        <select class="form-control selectpicker" id="status2" name="status" data-show-tick="true" data-live-search="false" title="请选择状态">
+                            <option value="0">隐藏</option>
+                            <option value="1" selected>显示</option>
+                            <option value="2">测试</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="id" id="id" value="">
+                    <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">关闭</button>
+                    <button type="button" id="preserve_form_submit" class="btn btn-primary font-weight-bold">确定</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>';
+
+        // 替换字段
+        $viewFormFieldsTemplate = implode(PHP_EOL, $viewFormFields);
+        $viewForm = str_replace('<!--template_form_fields_start,template_form_fields_end-->', $viewFormFieldsTemplate, $formTemplate);
+        $viewContentTemp = str_replace('<!--template_form_start,template_form_end-->', $viewForm, $viewContentTemp);
+
+        $formInfo = '    //窗口添加
+    let preserve_modal = $(\'#preserve_modal\');
+    let preserve_form = $(\'#preserve_form\');
+    $(document).on(\'click\', \'#preserve\', function () {
+        reset_form(preserve_form);
+        $(\'#preserve_title\').html(\'添加\');
+        $("#id").val(\'\');
+        preserve_modal.modal();
+    });
+
+    //添加验证器
+    validation = form_validation(\'preserve_form\', {
+<!--template_validate_start,template_validate_end-->
+        status: {
+            validators: {
+                notEmpty: {
+                    message: \'请选择状态\'
+                }
+            }
+        },
+    });
+    var addStatus = 1;
+    $(\'#preserve_form_submit\').on(\'click\', function (e) {
+        e.preventDefault();
+        if(addStatus){
+            validation.validate().then(function (status) {
+                if (status === \'Valid\') {
+                    addStatus = false;
+                    let url = "<?php echo base_url(\'admin/demo/editDo\'); ?>";
+                    let params = serialize_object(preserve_form);
+                    $.axios.request(\'POST\', url, params, function (response_data) {
+                        if(response_data.status != 1) {
+                            setTimeout(function () {
+                                addStatus = 1;
+                            }, 1500)
+                        }
+                        showMessage(response_data);
+                    });
+                }
+            })
+        }
+    })
+    //编辑
+    $(document).on(\'click\', \'[data-operation="edit"]\', function () {
+        let key = $(this).data(\'id\');
+
+        //获取管理员信息
+        let url = "<?php echo base_url(\'admin/demo/edit\'); ?>";
+        let params = {
+            id: key
+        };
+        $.axios.request(\'POST\', url, params, function (response_data) {
+            $(\'#preserve_title\').html(\'编辑\');
+            reset_form(preserve_form);
+
+            let data = response_data.data;
+            <!--template_form_info_start-->
+            preserve_form.find("input[name=\'id\']").val(data.id);
+            preserve_form.find("input[name=\'name\']").val(data.name);
+            <!--template_form_info_end-->
+            preserve_form.find("select[name=\'status\']").selectpicker(\'val\', data.status);
+            preserve_modal.modal();
+        });
+    });';
+
+        // 替换字段
+        $viewFormJsTemplate = implode(PHP_EOL, $viewFormJsFields);
+        $viewJsForm = str_replace('<!--template_validate_start,template_validate_end-->', $viewFormJsTemplate, $formInfo);
+        $viewContentTemp = str_replace('<!--template_form_js_start,template_form_js_end-->', $viewJsForm, $viewContentTemp);
+
+
+        // 最后统一替换模块名称
+        $viewContentTemp = str_replace('Demo', ucfirst($module), $viewContentTemp);
+        $viewContentTemp = str_replace('demo', strtolower($module), $viewContentTemp);
+
+
+        $viewDir = "$baseDir\/resource";
+        $fileName = explode('/', $item);
+        $fileName = array_pop($fileName);
+        $file = "$viewDir/$module/$fileName";
+        $path = dirname($file);
+        if(!file_exists($path)){
+            mkdir($path, '0777', true);
+        }
+        file_put_contents($file, $viewContentTemp);
+        break;
+    }
+}else{
+    foreach ($viewTemplate as $item){
+        copy($item, $tempDir);
+        $viewContentTemp = file_get_contents($tempDir);
+
+        // 替换view表格字段
+        $viewFieldsTemplate = implode(PHP_EOL, $viewFields);
+        $viewContentTemp = str_replace('<!--template_view_fields_start,template_view_fields_end-->', $viewFieldsTemplate, $viewContentTemp);
+
+
+        // 替换form字段
+        $viewFieldsTemplate = implode(PHP_EOL, $viewFormValidateFields2);
+        $viewContentTemp = str_replace('<!--template_form_filed_start,template_form_filed_end-->', $viewFieldsTemplate, $viewContentTemp);
+
+        // 替换form_js字段
+        $viewFieldsTemplate = implode(PHP_EOL, $viewFormJsFields);
+        $viewContentTemp = str_replace('<!--template_validate_start,template_validate_end-->', $viewFieldsTemplate, $viewContentTemp);
+
+
+        $viewContentTemp = str_replace('Demo', ucfirst($module), $viewContentTemp);
+        $viewContentTemp = str_replace('demo', strtolower($module), $viewContentTemp);
+
+        $viewDir = "$baseDir\/resource";
+        $fileName = explode('/', $item);
+        $fileName = array_pop($fileName);
+        $file = "$viewDir/$module/$fileName";
+        $path = dirname($file);
+        if(!file_exists($path)){
+            mkdir($path, '0777', true);
+        }
+        file_put_contents($file, $viewContentTemp);
+    }
+}
 
 
 
@@ -175,3 +346,7 @@ function searchStr($str){
     $res = preg_replace('/(,)*/', '', $res);
     return $res;
 }
+
+
+
+
