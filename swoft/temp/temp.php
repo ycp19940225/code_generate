@@ -37,19 +37,6 @@
                             <!--end::Page Heading-->
                         </div>
                         <!--end::Info-->
-
-                        <div class="d-flex align-items-center">
-                            <!--begin::Actions-->
-                            <a href="<?php
-                            if(!empty($url)){
-                                echo $url;
-                            }else{
-                                echo base_url('admin/demo/index');
-                            }
-                            ?>" class="btn btn-light font-weight-bolder btn-sm">
-                                <i class="ki ki-bold-arrow-back icon-sm"></i> 返回</a>
-                            <!--end::Actions-->
-                        </div>
                     </div>
                 </div>
                 <!--end::Subheader-->
@@ -57,40 +44,56 @@
                 <div class="d-flex flex-column-fluid">
                     <!--begin::Container-->
                     <div class="container">
-                        <form class="form" method="post" action="" id="preserve_form">
-                            <input type="hidden" name="id" value="<?=$id?>">
-                            <div class="card card-custom">
-                                <div class="card-header">
-                                    <h3 class="card-title">基本信息</h3>
-                                </div>
-                                <div class="card-body pb-0">
-                                    <div class="form-group row">
-<!--template_form_filed_start,template_form_filed_end-->
-                                        <div class="form-group col-lg-6">
-                                            <label>标题<span class="text-danger">*</span></label>
-                                            <div class="input-group">
-                                                <input type="text" name="name" class="form-control" placeholder="请输入标题" value="<?=$name?>"/>
+                        <div class="card card-custom">
+                            <div class="card-body">
+                                <div class="mb-7">
+                                    <div class="row align-items-center">
+                                        <div class="col-lg-2 col-xl-2">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-12 my-2 my-md-0">
+                                                    <div class="">
+                                                        <input type="text" class="form-control dt_search" placeholder="昵称 / 手机号" id="s_keywords" name="s_keywords">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="form-group col-lg-6">
-                                            <label>状态<span class="text-danger">*</span></label>
-                                            <select class="form-control selectpicker" id="status" name="status" >
+                                        <div class="col-lg-2 col-xl-2">
+                                            <select class="form-control dt_search selectpicker" id="status" name="status" data-show-tick="true" title="所有状态">
+                                                <option value="-1" selected>所有状态</option>
+                                                <option value="0">隐藏</option>
                                                 <option value="1">显示</option>
                                                 <option value="2">测试</option>
-                                                <option value="0">隐藏</option>
                                             </select>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <button type="button" class="btn btn-primary mr-2 submit">保存</button>
+                                        <div class="col-lg-3 col-xl-3">
+                                            <a href="javascript:void(0)" class="btn btn-light-primary font-weight-bold" id="search_button"><i class="fa fa-search"></i>搜索</a>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <div class="btn-group float-right">
+                                                <button type="button" class="btn btn-primary" id="preserve">
+                                                    <i class="la la-plus-circle"></i> 添加
+                                                </button>
+                                                <a href="<?php echo base_url('admin/demo/edit2');?>" type="button" class="btn btn-primary">
+                                                    <i class="la la-plus-circle"></i> 添加
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="table-responsive">
+                                    <table class="table table-head-custom table-vertical-center" id="list">
+                                        <thead>
+                                        <tr class="text-left">
+                                            <th style="width: 5%;">ID</th>
+<!--template_view_fields_start,template_view_fields_end-->
+                                            <th style="width: 5%;">操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </form>
+                        </div>
                         <!--end::Card-->
                     </div>
                     <!--end::Container-->
@@ -107,47 +110,34 @@
     <!--end::Page-->
 </div>
 <!--end::Main-->
-
+<!--template_form_start,template_form_end-->
 <?php $this->include('Common/js') ?>
 <script>
-    //添加验证器
-    var validation = form_validation('preserve_form', {
-<!--template_validate_start,template_validate_end-->
-        name: {
-            validators: {
-                notEmpty: {
-                    message: '请填写标题'
-                }
-            }
-        }
+
+    //获取列表操作
+    let list = $('#list');
+    getList(list, {
+        ajax: "<?php echo base_url('admin/demo/list');?>",
     });
-    $(function () {
-        // 表单赋值
-        if(!empty("<?=$id?>")){
-            $("select[name='status']").val(<?=$status?>);
-            $("select").selectpicker('refresh')
-        }
-        var addStatus = 1;
-        $(".submit").click(function () {
-            if(addStatus){
-                validation.validate().then(function (status) {
-                    if (status === 'Valid') {
-                        addStatus = false;
-                        let url = "<?php echo base_url('admin/demo/editDo'); ?>";
-                        let params = serialize_object($("#preserve_form"));
-                        $.axios.request('POST', url, params, function (response_data) {
-                            if(response_data.status != 1) {
-                                setTimeout(function () {
-                                    addStatus = 1;
-                                }, 1500)
-                            }
-                            showMessage(response_data);
-                        });
-                    }
-                })
-            }
-        });
+
+    //点击搜索操作
+    $('#search_button').on('click', function () {
+        list.dataTable().fnDraw();
     });
+
+    //表单页面添加
+    <!--template_form_js_start,template_form_js_end-->
+    //删除
+    $(document).on('click', '[data-operation="delete"]', function () {
+        var name = $(this).data('name');
+        let id = $(this).data('id');
+        tip('<?php echo base_url('admin/demo/delete');?>', {
+            'id': id,
+        }, '确认要删除吗？', name, function (response_data) {
+            list.dataTable().fnDraw();
+            showMessage(response_data, false);
+        })
+    })
 </script>
 </body>
 <!--end::Body-->

@@ -79,6 +79,7 @@ foreach ($fieldsArray as $item){
                 }
             }
         },';
+        $viewFormEditFields[] = str_repeat(' ', 3*4).'preserve_form.find("input[name=\''.$str.'\']").val(data.'.$str.');';
         // 跳转表单
         $viewFormValidateFields2[] = str_repeat(' ', 10*4).'<div class="form-group col-lg-6">
                                             <label>'.$strName.'<span class="text-danger">*</span></label>
@@ -270,10 +271,9 @@ if($formType == 1){
             reset_form(preserve_form);
 
             let data = response_data.data;
-            <!--template_form_info_start-->
+<!--template_form_info_start,template_form_info_end-->
             preserve_form.find("input[name=\'id\']").val(data.id);
-            preserve_form.find("input[name=\'name\']").val(data.name);
-            <!--template_form_info_end-->
+
             preserve_form.find("select[name=\'status\']").selectpicker(\'val\', data.status);
             preserve_modal.modal();
         });
@@ -281,7 +281,9 @@ if($formType == 1){
 
         // 替换字段
         $viewFormJsTemplate = implode(PHP_EOL, $viewFormJsFields);
+        $viewFormEditFields = implode(PHP_EOL, $viewFormEditFields);
         $viewJsForm = str_replace('<!--template_validate_start,template_validate_end-->', $viewFormJsTemplate, $formInfo);
+        $viewJsForm = str_replace('<!--template_form_info_start,template_form_info_end-->', $viewFormEditFields, $viewJsForm);
         $viewContentTemp = str_replace('<!--template_form_js_start,template_form_js_end-->', $viewJsForm, $viewContentTemp);
 
 
