@@ -166,7 +166,6 @@ file_put_contents($file, $logicContentContentTemp);
 
 
 
-
 function searchStr($str){
     $pattern = "/COMMENT\s?(.*?)$/";
     preg_match($pattern, $str, $matches);
