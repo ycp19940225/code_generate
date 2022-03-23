@@ -2,19 +2,17 @@
 <div class="row">
     <div class="col-sm-12 table-container">
         <div class="pull-right">
-            <a href="javascript:void(0);" id="add_tag"
+            <a href="javascript:void(0);" id="add_demo"
                class="btn btn-default waves-effect waves-light">
                 <i class="fa fa-plus"></i>&nbsp;新增标签
             </a>
         </div>
         <table class="table table-hover table-actions-bar nowrap table-nowrap"
-               id="tag_lists">
+               id="demo_lists">
             <thead>
             <tr>
                 <th sort="false" width="5%">ID</th>
-                <th sort="false">标签名</th>
-                <th sort="false" width="15%">排序</th>
-                <th sort="false" width="15%">创建时间</th>
+<!--template_view_fields_start,template_view_fields_end-->
                 <th sort="false" width="80">操作</th>
             </tr>
             </thead>
@@ -26,27 +24,16 @@
 </div>
 
 <!-- modal 新增标签 start -->
-<div class="modal fade modal_small" id="add_tag_modal" tabindex="-1" aria-hidden="true">
+<div class="modal fade modal_small" id="add_demo_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title"> 新增标签</h4>
             </div>
-            <form class="form-horizontal form-row-seperated" method="post" id="add_tag_form"
-                  action="<?php echo site_url('Admins/Course/tagEditDo'); ?>" enctype="multipart/form-data">
+            <form class="form-horizontal form-row-seperated" method="post" id="add_demo_form"
+                  action="<?php echo site_url('Admins/Course/demoEditDo'); ?>" enctype="multipart/form-data">
                 <div class="modal-body form">
-                    <div class="form-group">
-                        <label for="hori-pass1" class="col-sm-2 control-label">标签名</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" required name="name" placeholder="请输入名称"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="hori-pass1" class="col-sm-2 control-label">排序号</label>
-                        <div class="col-sm-9">
-                            <input type="number" class="form-control" required name="index_id" placeholder="请输入排序号"/>
-                        </div>
-                    </div>
+<!--template_form_filed_start,template_form_filed_end-->
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" class="form-control" name="id" value=""/>
@@ -68,7 +55,7 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- modal 新增标签 end -->
-<div id="del_tag_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="custom-width-modalLabel"
+<div id="del_demo_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="custom-width-modalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" id="del_content">
@@ -76,8 +63,8 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h4 class="modal-title" id="custom-width-modalLabel">删除</h4>
             </div>
-            <form class="form-horizontal form-row-seperated" method="post" id="del_tag_form"
-                  action="<?php echo site_url('/Admins/Course/tagDelete'); ?>" enctype="multipart/form-data">
+            <form class="form-horizontal form-row-seperated" method="post" id="del_demo_form"
+                  action="<?php echo site_url('/Admins/Course/demoDelete'); ?>" enctype="multipart/form-data">
                 <div class="modal-body">
                     <p del="msg">确定删除？</p>
                 </div>
@@ -98,34 +85,33 @@
 
 <script>
     $(function () {
-        var tag_modal = $('#add_tag_modal');
-        var tag_form = $('#add_tag_form');
-        $("#add_tag").click(function () {
-            resetForm(tag_form);
-            $(tag_form).find('[name="id"]').val('');
-            tag_modal.modal();
+        var demo_modal = $('#add_demo_modal');
+        var demo_form = $('#add_demo_form');
+        $("#add_demo").click(function () {
+            resetForm(demo_form);
+            $(demo_form).find('[name="id"]').val('');
+            demo_modal.modal();
         })
 
         //编辑
-        $('#tag_lists').on('click', '[operation="edit"]', function () {
+        $('#demo_lists').on('click', '[operation="edit"]', function () {
 
-            $(tag_modal).find('[class="modal-title"]').html('编辑');
-            resetForm(tag_modal);
-            var url = '<?php echo site_url('Admins/Course/tagGetInfo');?>';
+            $(demo_modal).find('[class="modal-title"]').html('编辑');
+            resetForm(demo_modal);
+            var url = '<?php echo site_url('Admins/Course/demoGetInfo');?>';
             var params = {
                 id: $(this).attr('id'),
             };
             new AjaxPostRequest(url, params, function (data) {
-                $(tag_form).find('[name="id"]').val(data.data.id);
-                $(tag_form).find('[name="name"]').val(data.data.name);
-                $(tag_form).find('[name="index_id"]').val(data.data.index_id);
-                tag_modal.modal();
+                $(demo_form).find('[name="id"]').val(data.data.id);
+<!--template_form_edit_start,template_form_edit_end-->
+                demo_modal.modal();
             });
         });
 
-        $.e_validate.init(tag_form, {
+        $.e_validate.init(demo_form, {
             returnFun: function (data) {
-                tag_modal.modal('hide');
+                demo_modal.modal('hide');
                 showMessage(data);
                 setTimeout(function () {
                     window.location.href = data.url;
@@ -134,20 +120,20 @@
         });
 
         //删除
-        var del_tag_modal = $('#del_tag_modal');
-        var del_tag_form = $('#del_tag_form');
+        var del_demo_modal = $('#del_demo_modal');
+        var del_demo_form = $('#del_demo_form');
 
-        $('#tag_lists').on('click', '[operation="delete"]', function () {
+        $('#demo_lists').on('click', '[operation="delete"]', function () {
             var delete_id = $(this).attr('id');
             var key = $(this).attr('key');
-            $(del_tag_form).find("[name='id']").val(delete_id);
-            $(del_tag_form).find("[name='key']").val(key);
-            del_tag_modal.modal();
+            $(del_demo_form).find("[name='id']").val(delete_id);
+            $(del_demo_form).find("[name='key']").val(key);
+            del_demo_modal.modal();
         });
 
-        $.e_validate.init(del_tag_form, {
+        $.e_validate.init(del_demo_form, {
             returnFun: function (data) {
-                del_tag_modal.modal('hide');
+                del_demo_modal.modal('hide');
                 showMessage(data);
                 setTimeout(function () {
                     location.reload();
