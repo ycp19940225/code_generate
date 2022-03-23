@@ -32,8 +32,8 @@ foreach ($fieldsArray as $item){
     if(!empty($desc[0])){
         $str = str_replace('`', '', $desc[0]);
         $strName = searchStr($item);
-        $tableFields[] = '                $data[\'aaData\'][$key][] = $datum[\''.$str.'\'];';
-        $editFields[] = '                \''.$str.'\' => $data[\''. $str .'\'],';
+        $tableFields[] = str_repeat(' ', 4*4).'$data[\'aaData\'][$key][] = $datum[\''.$str.'\'];';
+        $editFields[] = str_repeat(' ', 2*4).'\''.$str.'\' => $data[\''. $str .'\'],';
         $viewFields[] = str_repeat(' ', 4*4).'<th >'.$strName.'</th>';
         $viewFormFields[] = str_repeat(' ', 5*4).'<div class="form-group">
                         <label for="hori-pass1" class="col-sm-2 control-label">'.$strName.'</label>
