@@ -1,35 +1,13 @@
 <?php
 
-fwrite(STDOUT, "输入代码根目录: ");
+$baseDir = './gen_code';
 
-$dir = trim(fgets(STDIN));
+$controlTemplate = './template/controller/DemoController.php';
+$logicTemplate = './template/logic/DemoLogic.php';
 
-$root = 'E:/phpstudy_pro/WWW/';
-
-$baseDir = $root.$dir;
-
-if(!file_exists($baseDir)){
-    echo '当前项目不存在';
-    $check = true;
-    while ($check){
-        fwrite(STDOUT, "\n输入代码根目录: ");
-        $dir = trim(fgets(STDIN));
-        $baseDir = $root.$dir;
-        if(file_exists($baseDir)){
-            $check = false;
-        }else{
-            echo "当前项目不存在";
-        }
-    }
-}
-
-
-$controlTemplate = './formwork/swoft-service-base/app/Http/Controller/DemoController.php';
-$logicTemplate = './formwork/swoft-service-base/app/Model/Logic/DemoLogic.php';
-
-$viewTemplate[] = './formwork/swoft-service-base/resource/demo/index.php';
-$viewTemplate[] = './formwork/swoft-service-base/resource/demo/form_add.php';
-$viewTemplate[] = './formwork/swoft-service-base/resource/demo/form_edit.php';
+$viewTemplate[] = './template/view/index.php';
+$viewTemplate[] = './template/view/form_add.php';
+$viewTemplate[] = './template/view/form_edit.php';
 
 $tempDir = './temp/temp.php';
 copy($controlTemplate, $tempDir);
@@ -55,23 +33,24 @@ while (true){
 fwrite(STDOUT, "表单类型（1弹窗2页面）: ");
 $formType = trim(fgets(STDIN));
 
-$tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormValidateFields2 = [];
+$tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormValidateFields = [];
 foreach ($fieldsArray as $item){
     $desc = explode(' ', $item);
     if(!empty($desc[0])){
         $str = str_replace('`', '', $desc[0]);
         $strName = searchStr($item);
+        // 列表字段
         $tableFields[] = '                $data[\'aaData\'][$k][] = $r[\''.$str.'\'];';
+        // 编辑字段
         $editFields[] = '                \''.$str.'\' => $data[\''. $str .'\'],';
+        // 表格字段
         $viewFields[] = str_repeat(' ', 11*4).'<th >'.$strName.'</th>';
+        // 表单字段
         $viewFormFields[] = str_repeat(' ', 5*4).'<div class="form-group">
                         <label>'.$strName.'</label>
                         <input type="text" id="'.$str.'" name="'.$str.'" class="form-control" placeholder="请输入'.$strName.'"/>
                     </div>';
-        $viewFormValidateFields[] = str_repeat(' ', 5*4).'<div class="form-group">
-                        <label>'.$strName.'</label>
-                        <input type="text" id="'.$str.'" name="'.$str.'" class="form-control" placeholder="请输入'.$strName.'"/>
-                    </div>';
+        // 表单验证字段
         $viewFormJsFields[] = str_repeat(' ', 2*4).''.$str.': {
             validators: {
                 notEmpty: {
@@ -81,7 +60,7 @@ foreach ($fieldsArray as $item){
         },';
         $viewFormEditFields[] = str_repeat(' ', 3*4).'preserve_form.find("input[name=\''.$str.'\']").val(data.'.$str.');';
         // 跳转表单
-        $viewFormValidateFields2[] = str_repeat(' ', 10*4).'<div class="form-group col-lg-6">
+        $viewFormValidateFields[] = str_repeat(' ', 10*4).'<div class="form-group col-lg-6">
                                             <label>'.$strName.'<span class="text-danger">*</span></label>
                                             <div class="input-group">
                                                 <input type="text" id="'.$str.'" name="'.$str.'" class="form-control" placeholder="请输入'.$strName.'"/>
@@ -314,7 +293,7 @@ if($formType == 1){
 
 
         // 替换form字段
-        $viewFieldsTemplate = implode(PHP_EOL, $viewFormValidateFields2);
+        $viewFieldsTemplate = implode(PHP_EOL, $viewFormValidateFields);
         $viewContentTemp = str_replace('<!--template_form_filed_start,template_form_filed_end-->', $viewFieldsTemplate, $viewContentTemp);
 
         // 替换form_js字段
