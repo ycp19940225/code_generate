@@ -12,6 +12,7 @@ use App\Http\Middleware\AuthMiddleware;
 use Throwable;
 
 /**
+ * [% title %]
  * Class DemoController
  * @Controller("/admin/demo")
  * @Middleware(AuthMiddleware::class)
@@ -28,7 +29,7 @@ class DemoController
     public function index()
     {
         $data = [];
-        return view('demo/index', $data);
+        return view('Demo/index', $data);
     }
 
 

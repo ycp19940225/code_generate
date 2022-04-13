@@ -31,7 +31,7 @@
                             <!--begin::Page Heading-->
                             <div class="d-flex align-items-baseline flex-wrap mr-5">
                                 <!--begin::Page Title-->
-                                <h5 class="text-dark font-weight-bold my-1 mr-5">Demo</h5>
+                                <h5 class="text-dark font-weight-bold my-1 mr-5">新增[% title %]</h5>
                                 <!--end::Page Title-->
                             </div>
                             <!--end::Page Heading-->
@@ -65,20 +65,6 @@
                                 <div class="card-body pb-0">
                                     <div class="form-group row">
 <!--template_form_filed_start,template_form_filed_end-->
-                                        <div class="form-group col-lg-6">
-                                            <label>标题<span class="text-danger">*</span></label>
-                                            <div class="input-group">
-                                                <input type="text" name="name" class="form-control" placeholder="请输入标题"/>
-                                            </div>
-                                        </div>
-                                        <div class="form-group col-lg-6">
-                                            <label>状态<span class="text-danger">*</span></label>
-                                            <select class="form-control selectpicker" id="status" name="status" >
-                                                <option value="1">显示</option>
-                                                <option value="2">测试</option>
-                                                <option value="0">隐藏</option>
-                                            </select>
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-footer">
@@ -112,13 +98,6 @@
     //添加验证器
     var validation = form_validation('preserve_form', {
 <!--template_validate_start,template_validate_end-->
-        name: {
-            validators: {
-                notEmpty: {
-                    message: '请填写标题'
-                }
-            }
-        }
     });
     $(function () {
         var addStatus = 1;

@@ -1,7 +1,7 @@
 <?php
-
+include_once './tool/func.php';
+//var_dump(templateReplace('title'));exit;
 $baseDir = './gen_code';
-
 $controlTemplate = './template/controller/DemoController.php';
 $logicTemplate = './template/logic/DemoLogic.php';
 
@@ -12,13 +12,23 @@ $viewTemplate[] = './template/view/form_edit.php';
 $tempDir = './temp/temp.php';
 copy($controlTemplate, $tempDir);
 
-fwrite(STDOUT, "输入模块名: ");
-$module = trim(fgets(STDIN));
+$module = cmdInput("输入模块名: ");
 $controllerContent = file_get_contents($tempDir);
 
-$class = ucfirst($module);
+$moduleTemp = explode('_', $module);
+$class = [];
+foreach ($moduleTemp as $item){
+    $class[] = ucfirst($item);
+}
+$class = implode('', $class);
 $controllerContentTemp = str_replace('Demo', $class, $controllerContent);
 $controllerContentTemp = str_replace('demo', strtolower($module), $controllerContentTemp);
+$ConTroModule = cmdInput("请选择输入控制器模块: ");
+if(!empty($ConTroModule)){
+    $ConTroModule = ucfirst($ConTroModule);
+    $strTemp = "namespace App\Http\Controller\\$ConTroModule;";
+    $controllerContentTemp = str_replace('namespace App\Http\Controller;', $strTemp, $controllerContentTemp);
+}
 
 //处理字段
 fwrite(STDOUT, "输入sql: ");
@@ -30,8 +40,14 @@ while (true){
     }
 }
 
-fwrite(STDOUT, "表单类型（1弹窗2页面）: ");
-$formType = trim(fgets(STDIN));
+$formType = cmdInput("请选择表单类型（1弹窗2页面）: ");
+
+$title = cmdInput("请输入页面标题: ");
+
+if(!empty($title)){
+    $controllerContentTemp = str_replace(templateReplace('title'), $title, $controllerContentTemp);
+}
+// 替换title
 
 $tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormValidateFields = [];
 foreach ($fieldsArray as $item){
@@ -75,9 +91,12 @@ $editFieldsTemplate = implode(PHP_EOL, $editFields);
 $controllerContentTemp = str_replace('// template_edit_fields_start,template_edit_fields_end', $editFieldsTemplate, $controllerContentTemp);
 $controllerContentTemp = str_replace('// template_add_fields_start,template_add_fields_end', $editFieldsTemplate, $controllerContentTemp);
 
-$handle1 = '                $action .= get_icon(\'edit\', [], base_url(\'admin/demo/edit2?id=\'. $r[\'id\']));';
+$handle1 = '                $action .= get_icon(\'edit\', [], base_url(\'admin/demo/edit?id=\'. $r[\'id\']));';
+$handle1 = str_replace('demo', strtolower($module), $handle1);
 $handle2 = '                $action .= get_icon(\'edit\', [\'id\' => $r[\'id\'], \'operation\' => \'edit\']);';
 
+
+/***************************************************************controller***************************************************************/
 if($formType == 1){
     $controllerContentTemp = str_replace('// template_handle_start,template_handle_end', $handle2, $controllerContentTemp);
     $editMethod = '     /**
@@ -93,6 +112,8 @@ if($formType == 1){
         $data = DemoLogic::getInfo([\'id\' => $id]);
         return responseJson(1, \'成功!\', $data);
     }';
+    $editMethod = str_replace('Demo', $class, $editMethod);
+    $editMethod = str_replace('demo', $class, $editMethod);
     $controllerContentTemp = str_replace('// template_edit_start,template_edit_end', $editMethod, $controllerContentTemp);
 }else{
     $controllerContentTemp = str_replace('// template_handle_start,template_handle_end', $handle1, $controllerContentTemp);
@@ -115,7 +136,8 @@ if($formType == 1){
             return view(\'demo/form_add\', $data);
         }
     }';
-
+    $editMethod = str_replace('Demo', $class, $editMethod);
+    $editMethod = str_replace('demo', $class, $editMethod);
     $controllerContentTemp = str_replace('// template_edit_start,template_edit_end', $editMethod, $controllerContentTemp);
 }
 
@@ -128,11 +150,11 @@ if(!file_exists($path)){
 file_put_contents($file, $controllerContentTemp);
 
 
-// model
+/***************************************************************model***************************************************************/
 copy($logicTemplate, $tempDir);
 $logicContent = file_get_contents($tempDir);
 
-$logicContentContentTemp = str_replace('Demo', ucfirst($module), $logicContent);
+$logicContentContentTemp = str_replace('Demo', $class, $logicContent);
 $logicContentContentTemp = str_replace('demo', strtolower($module), $logicContentContentTemp);
 
 $modelDir = "$baseDir\app\Model\Logic";
@@ -143,11 +165,20 @@ if(!file_exists($path)){
 }
 file_put_contents($file, $logicContentContentTemp);
 
+
+/***************************************************************view***************************************************************/
 if($formType == 1){
     foreach ($viewTemplate as $item){
         copy($item, $tempDir);
         $viewContentTemp = file_get_contents($tempDir);
+        // 替换操作按钮
+        $button = '<button type="button" class="btn btn-primary" id="preserve">
+                                                    <i class="la la-plus-circle"></i> 添加
+                                                </button>';
+        $viewContentTemp = str_replace('<!--template_button_start,template_button_end-->', $button, $viewContentTemp);
 
+        // 替换title
+        $viewContentTemp = str_replace(templateReplace('title'), $title, $viewContentTemp);
 
         // 替换view表格字段
         $viewFieldsTemplate = implode(PHP_EOL, $viewFields);
@@ -166,10 +197,6 @@ if($formType == 1){
                 </div>
                 <div class="modal-body">
 <!--template_form_fields_start,template_form_fields_end-->
-                    <div class="form-group">
-                        <label>名称</label>
-                        <input type="number" id="name" name="name" class="form-control" placeholder="请输入名称"/>
-                    </div>
                     <div class="form-group">
                         <label>状态 <span class="text-danger">*</span></label>
                         <select class="form-control selectpicker" id="status2" name="status" data-show-tick="true" data-live-search="false" title="请选择状态">
@@ -267,14 +294,15 @@ if($formType == 1){
 
 
         // 最后统一替换模块名称
-        $viewContentTemp = str_replace('Demo', ucfirst($module), $viewContentTemp);
+        $viewContentTemp = str_replace('Demo', $class, $viewContentTemp);
         $viewContentTemp = str_replace('demo', strtolower($module), $viewContentTemp);
 
 
         $viewDir = "$baseDir\/resource";
         $fileName = explode('/', $item);
         $fileName = array_pop($fileName);
-        $file = "$viewDir/$module/$fileName";
+        $moduleTemp = $class;
+        $file = "$viewDir/$moduleTemp/$fileName";
         $path = dirname($file);
         if(!file_exists($path)){
             mkdir($path, '0777', true);
@@ -283,9 +311,20 @@ if($formType == 1){
         break;
     }
 }else{
-    foreach ($viewTemplate as $item){
+    foreach ($viewTemplate as $key => $item){
         copy($item, $tempDir);
         $viewContentTemp = file_get_contents($tempDir);
+
+        if($key == 0){
+            // 替换操作按钮
+            $button = '<a href="<?php echo base_url(\'admin/demo/edit\');?>" type="button" class="btn btn-primary">
+                                                    <i class="la la-plus-circle"></i> 添加
+                                                </a>';
+            $viewContentTemp = str_replace('<!--template_button_start,template_button_end-->', $button, $viewContentTemp);
+        }
+
+        // 替换title
+        $viewContentTemp = str_replace(templateReplace('title'), $title, $viewContentTemp);
 
         // 替换view表格字段
         $viewFieldsTemplate = implode(PHP_EOL, $viewFields);
@@ -301,13 +340,14 @@ if($formType == 1){
         $viewContentTemp = str_replace('<!--template_validate_start,template_validate_end-->', $viewFieldsTemplate, $viewContentTemp);
 
 
-        $viewContentTemp = str_replace('Demo', ucfirst($module), $viewContentTemp);
+        $viewContentTemp = str_replace('Demo', $class, $viewContentTemp);
         $viewContentTemp = str_replace('demo', strtolower($module), $viewContentTemp);
 
         $viewDir = "$baseDir\/resource";
         $fileName = explode('/', $item);
         $fileName = array_pop($fileName);
-        $file = "$viewDir/$module/$fileName";
+        $moduleTemp = $class;
+        $file = "$viewDir/$moduleTemp/$fileName";
         $path = dirname($file);
         if(!file_exists($path)){
             mkdir($path, '0777', true);
@@ -316,17 +356,6 @@ if($formType == 1){
     }
 }
 
-
-
-function searchStr($str){
-    $pattern = "/COMMENT\s?(.*?)$/";
-    preg_match($pattern, $str, $matches);
-
-    $res = $matches[1];
-    $res = preg_replace('/(\'*)/', '', $res);
-    $res = preg_replace('/(,)*/', '', $res);
-    return $res;
-}
 
 
 

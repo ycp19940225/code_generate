@@ -31,7 +31,7 @@
                             <!--begin::Page Heading-->
                             <div class="d-flex align-items-baseline flex-wrap mr-5">
                                 <!--begin::Page Title-->
-                                <h5 class="text-dark font-weight-bold my-1 mr-5">Demo</h5>
+                                <h5 class="text-dark font-weight-bold my-1 mr-5">[% title %]管理</h5>
                                 <!--end::Page Title-->
                             </div>
                             <!--end::Page Heading-->
@@ -70,12 +70,7 @@
                                         </div>
                                         <div class="col-lg-5">
                                             <div class="btn-group float-right">
-                                                <button type="button" class="btn btn-primary" id="preserve">
-                                                    <i class="la la-plus-circle"></i> 添加
-                                                </button>
-                                                <a href="<?php echo base_url('admin/demo/edit2');?>" type="button" class="btn btn-primary">
-                                                    <i class="la la-plus-circle"></i> 添加
-                                                </a>
+                                                 <!--template_button_start,template_button_end-->
                                             </div>
                                         </div>
                                     </div>
