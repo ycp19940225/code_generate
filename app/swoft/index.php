@@ -1,4 +1,6 @@
 <?php
+namespace app\swoft;
+
 include_once './tool/func.php';
 //var_dump(templateReplace('title'));exit;
 $baseDir = './gen_code';

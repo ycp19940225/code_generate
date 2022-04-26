@@ -1,5 +1,5 @@
 <?php
-
+namespace app\ci;
 $root = './gen_code';
 
 $baseDir = $root;
