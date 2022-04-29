@@ -7,16 +7,54 @@ use App\code_template\swoft\tool\Func;
 
 class SwoftInit
 {
+
+    /**
+     * @var string|string[]
+     */
+    private $rootDir;
+    /**
+     * @var string
+     */
+    private $baseDir;
+    /**
+     * @var string
+     */
+    private $controlTemplate;
+    /**
+     * @var string
+     */
+    private $logicTemplate;
+    /**
+     * @var array
+     */
+    private $viewTemplate;
+    /**
+     * @var string
+     */
+    private $tempDir;
+
+    public function __construct()
+    {
+        $this->rootDir = str_replace('\\','/',realpath(dirname(__FILE__).'/'));
+
+        $this->baseDir = $this->rootDir .'/gen_code';
+        $this->controlTemplate = $this->rootDir .'/template/controller/Controller.php';
+        $this->logicTemplate = $this->rootDir .'/template/logic/Logic.php';
+        $this->tempDir = $this->rootDir .'/temp/temp.php';
+
+        $this->viewTemplate[] = $this->rootDir .'/template/view/index.php';
+        $this->viewTemplate[] = $this->rootDir .'/template/view/form_add.php';
+        $this->viewTemplate[] = $this->rootDir .'/template/view/form_edit.php';
+    }
     public function run()
     {
-        $rootDir = str_replace('\\','/',realpath(dirname(__FILE__).'/'));
         $input = $_POST;
 //        if(empty($module)){
 //            $input = json_decode(file_get_contents('php://input'), true);
 //        }
         $module = $input['module'];
         if(empty($module)){
-            echo 'fail';
+           error('必传参数module!');
         }
         $ConTroModule = $input['module_name'];
         $formType = $input['form_type'];
@@ -30,15 +68,13 @@ class SwoftInit
             }
         }
 
-        $baseDir = $rootDir .'/gen_code';
-        $controlTemplate = $rootDir .'/template/controller/DemoController.php';
-        $logicTemplate = $rootDir .'/template/logic/DemoLogic.php';
+        $baseDir = $this->baseDir;
+        $controlTemplate = $this->controlTemplate;
+        $logicTemplate = $this->logicTemplate;
+        $viewTemplate = $this->viewTemplate;
+        $tempDir = $this->tempDir;
 
-        $viewTemplate[] = $rootDir .'/template/view/index.php';
-        $viewTemplate[] = $rootDir .'/template/view/form_add.php';
-        $viewTemplate[] = $rootDir .'/template/view/form_edit.php';
 
-        $tempDir = $rootDir .'/temp/temp.php';
         copy($controlTemplate, $tempDir);
 
         $controllerContent = file_get_contents($tempDir);
@@ -49,17 +85,15 @@ class SwoftInit
             $class[] = ucfirst($item);
         }
         $class = implode('', $class);
-        $controllerContentTemp = str_replace('Demo', $class, $controllerContent);
-        $controllerContentTemp = str_replace('demo', strtolower($module), $controllerContentTemp);
+        $controllerContentTemp = templateReplace('Module', $class, $controllerContent);
+        $controllerContentTemp = templateReplace('module', strtolower($module), $controllerContentTemp);
         if (!empty($ConTroModule)) {
             $ConTroModule = ucfirst($ConTroModule);
             $strTemp = "namespace App\Http\Controller\\$ConTroModule;";
             $controllerContentTemp = str_replace('namespace App\Http\Controller;', $strTemp, $controllerContentTemp);
         }
-
-
         if (!empty($title)) {
-            $controllerContentTemp = str_replace(Func::templateReplace('title'), $title, $controllerContentTemp);
+            $controllerContentTemp = templateReplace('title', $title, $controllerContentTemp);
         }
         // 替换title
         $tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormValidateFields = [];
@@ -69,9 +103,9 @@ class SwoftInit
                 $str = str_replace('`', '', $desc[0]);
                 $strName = Func::searchStr($item);
                 // 列表字段
-                $tableFields[] = '                $data[\'aaData\'][$k][] = $r[\'' . $str . '\'];';
+                $tableFields[] = str_repeat(' ', 4 * 4) . '$data[\'aaData\'][$k][] = $r[\'' . $str . '\'];';
                 // 编辑字段
-                $editFields[] = '                \'' . $str . '\' => $data[\'' . $str . '\'],';
+                $editFields[] = str_repeat(' ', 4 * 4) . '\'' . $str . '\' => $data[\'' . $str . '\'],';
                 // 表格字段
                 $viewFields[] = str_repeat(' ', 11 * 4) . '<th >' . $strName . '</th>';
                 // 表单字段
@@ -99,13 +133,13 @@ class SwoftInit
         }
         $tableFieldsTemplate = implode(PHP_EOL, $tableFields);
         $controllerContentTemp = str_replace('// template_fields_start,template_fields_end', $tableFieldsTemplate, $controllerContentTemp);
-// 替换编辑添加字段
+        // 替换编辑添加字段
         $editFieldsTemplate = implode(PHP_EOL, $editFields);
         $controllerContentTemp = str_replace('// template_edit_fields_start,template_edit_fields_end', $editFieldsTemplate, $controllerContentTemp);
         $controllerContentTemp = str_replace('// template_add_fields_start,template_add_fields_end', $editFieldsTemplate, $controllerContentTemp);
 
-        $handle1 = '                $action .= get_icon(\'edit\', [], base_url(\'admin/demo/edit?id=\'. $r[\'id\']));';
-        $handle1 = str_replace('demo', strtolower($module), $handle1);
+        $handle1 = '                $action .= get_icon(\'edit\', [], base_url(\'admin/[% module %]/edit?id=\'. $r[\'id\']));';
+        $handle1 = templateReplace('module', strtolower($module), $handle1);
         $handle2 = '                $action .= get_icon(\'edit\', [\'id\' => $r[\'id\'], \'operation\' => \'edit\']);';
 
 
@@ -122,11 +156,11 @@ class SwoftInit
     public function edit(Request $request, Response $response)
     {
         $id = $request->input(\'id\', \'\');
-        $data = DemoLogic::getInfo([\'id\' => $id]);
+        $data = [% Module %]Logic::getInfo([\'id\' => $id]);
         return responseJson(1, \'成功!\', $data);
     }';
-            $editMethod = str_replace('Demo', $class, $editMethod);
-            $editMethod = str_replace('demo', $class, $editMethod);
+            $editMethod = templateReplace('Module', $class, $editMethod);
+            $editMethod = templateReplace('module', $class, $editMethod);
             $controllerContentTemp = str_replace('// template_edit_start,template_edit_end', $editMethod, $controllerContentTemp);
         } else {
             $controllerContentTemp = str_replace('// template_handle_start,template_handle_end', $handle1, $controllerContentTemp);
@@ -143,14 +177,14 @@ class SwoftInit
         $id = $request->input(\'id\', \'\');
         $data = [];
         if (!empty($id)) {
-            $data = DemoLogic::getInfo([\'id\' => $id]);
-            return view(\'demo/form_edit\', $data);
+            $data = [% Module %]Logic::getInfo([\'id\' => $id]);
+            return view(\'[% module %]/form_edit\', $data);
         }else{
-            return view(\'demo/form_add\', $data);
+            return view(\'[% module %]/form_add\', $data);
         }
     }';
-            $editMethod = str_replace('Demo', $class, $editMethod);
-            $editMethod = str_replace('demo', $class, $editMethod);
+            $editMethod = templateReplace('Module', $class, $editMethod);
+            $editMethod = templateReplace('module', $class, $editMethod);
             $controllerContentTemp = str_replace('// template_edit_start,template_edit_end', $editMethod, $controllerContentTemp);
         }
 
@@ -167,8 +201,8 @@ class SwoftInit
         copy($logicTemplate, $tempDir);
         $logicContent = file_get_contents($tempDir);
 
-        $logicContentContentTemp = str_replace('Demo', $class, $logicContent);
-        $logicContentContentTemp = str_replace('demo', strtolower($module), $logicContentContentTemp);
+        $logicContentContentTemp = templateReplace('Module', $class, $logicContent);
+        $logicContentContentTemp = templateReplace('module', strtolower($module), $logicContentContentTemp);
 
         $modelDir = "$baseDir\app\Model\Logic";
         $file = "$modelDir/$class" . "Logic.php";
@@ -191,112 +225,21 @@ class SwoftInit
                 $viewContentTemp = str_replace('<!--template_button_start,template_button_end-->', $button, $viewContentTemp);
 
                 // 替换title
-                $viewContentTemp = str_replace(Func::templateReplace('title'), $title, $viewContentTemp);
+                $viewContentTemp = templateReplace('title', $title, $viewContentTemp);
 
                 // 替换view表格字段
                 $viewFieldsTemplate = implode(PHP_EOL, $viewFields);
                 $viewContentTemp = str_replace('<!--template_view_fields_start,template_view_fields_end-->', $viewFieldsTemplate, $viewContentTemp);
 
                 // 替换表单
-                $formTemplate = '<div class="modal fade" id="preserve_modal" tabindex="-1" role="dialog" aria-labelledby="preserve_modal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="preserve_form">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="preserve_title">添加</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <i aria-hidden="true" class="ki ki-close"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-<!--template_form_fields_start,template_form_fields_end-->
-                    <div class="form-group">
-                        <label>状态 <span class="text-danger">*</span></label>
-                        <select class="form-control selectpicker" id="status2" name="status" data-show-tick="true" data-live-search="false" title="请选择状态">
-                            <option value="0">隐藏</option>
-                            <option value="1" selected>显示</option>
-                            <option value="2">测试</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <input type="hidden" name="id" id="id" value="">
-                    <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">关闭</button>
-                    <button type="button" id="preserve_form_submit" class="btn btn-primary font-weight-bold">确定</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>';
+                $formTemplate = getPackageTempLate('form');
 
                 // 替换字段
                 $viewFormFieldsTemplate = implode(PHP_EOL, $viewFormFields);
                 $viewForm = str_replace('<!--template_form_fields_start,template_form_fields_end-->', $viewFormFieldsTemplate, $formTemplate);
                 $viewContentTemp = str_replace('<!--template_form_start,template_form_end-->', $viewForm, $viewContentTemp);
 
-                $formInfo = '    //窗口添加
-    let preserve_modal = $(\'#preserve_modal\');
-    let preserve_form = $(\'#preserve_form\');
-    $(document).on(\'click\', \'#preserve\', function () {
-        reset_form(preserve_form);
-        $(\'#preserve_title\').html(\'添加\');
-        $("#id").val(\'\');
-        preserve_modal.modal();
-    });
-
-    //添加验证器
-    validation = form_validation(\'preserve_form\', {
-<!--template_validate_start,template_validate_end-->
-        status: {
-            validators: {
-                notEmpty: {
-                    message: \'请选择状态\'
-                }
-            }
-        },
-    });
-    var addStatus = 1;
-    $(\'#preserve_form_submit\').on(\'click\', function (e) {
-        e.preventDefault();
-        if(addStatus){
-            validation.validate().then(function (status) {
-                if (status === \'Valid\') {
-                    addStatus = false;
-                    let url = "<?php echo base_url(\'admin/demo/editDo\'); ?>";
-                    let params = serialize_object(preserve_form);
-                    $.axios.request(\'POST\', url, params, function (response_data) {
-                        if(response_data.status != 1) {
-                            setTimeout(function () {
-                                addStatus = 1;
-                            }, 1500)
-                        }
-                        showMessage(response_data);
-                    });
-                }
-            })
-        }
-    })
-    //编辑
-    $(document).on(\'click\', \'[data-operation="edit"]\', function () {
-        let key = $(this).data(\'id\');
-
-        //获取管理员信息
-        let url = "<?php echo base_url(\'admin/demo/edit\'); ?>";
-        let params = {
-            id: key
-        };
-        $.axios.request(\'POST\', url, params, function (response_data) {
-            $(\'#preserve_title\').html(\'编辑\');
-            reset_form(preserve_form);
-
-            let data = response_data.data;
-<!--template_form_info_start,template_form_info_end-->
-            preserve_form.find("input[name=\'id\']").val(data.id);
-
-            preserve_form.find("select[name=\'status\']").selectpicker(\'val\', data.status);
-            preserve_modal.modal();
-        });
-    });';
+                $formInfo = getPackageTempLate('formInfo');
 
                 // 替换字段
                 $viewFormJsTemplate = implode(PHP_EOL, $viewFormJsFields);
@@ -307,8 +250,8 @@ class SwoftInit
 
 
                 // 最后统一替换模块名称
-                $viewContentTemp = str_replace('Demo', $class, $viewContentTemp);
-                $viewContentTemp = str_replace('demo', strtolower($module), $viewContentTemp);
+                $viewContentTemp = templateReplace('Module', $class, $viewContentTemp);
+                $viewContentTemp = templateReplace('module', strtolower($module), $viewContentTemp);
 
 
                 $viewDir = "$baseDir\/resource";
@@ -330,14 +273,14 @@ class SwoftInit
 
                 if ($key == 0) {
                     // 替换操作按钮
-                    $button = '<a href="<?php echo base_url(\'admin/demo/edit\');?>" type="button" class="btn btn-primary">
+                    $button = '<a href="<?php echo base_url(\'admin/[% module %]/edit\');?>" type="button" class="btn btn-primary">
                                                     <i class="la la-plus-circle"></i> 添加
                                                 </a>';
                     $viewContentTemp = str_replace('<!--template_button_start,template_button_end-->', $button, $viewContentTemp);
                 }
 
                 // 替换title
-                $viewContentTemp = str_replace(Func::templateReplace('title'), $title, $viewContentTemp);
+                $viewContentTemp = templateReplace('title', $title, $viewContentTemp);
 
                 // 替换view表格字段
                 $viewFieldsTemplate = implode(PHP_EOL, $viewFields);
@@ -353,8 +296,8 @@ class SwoftInit
                 $viewContentTemp = str_replace('<!--template_validate_start,template_validate_end-->', $viewFieldsTemplate, $viewContentTemp);
 
 
-                $viewContentTemp = str_replace('Demo', $class, $viewContentTemp);
-                $viewContentTemp = str_replace('demo', strtolower($module), $viewContentTemp);
+                $viewContentTemp = templateReplace('Module', $class, $viewContentTemp);
+                $viewContentTemp = templateReplace('module', strtolower($module), $viewContentTemp);
 
                 $viewDir = "$baseDir\/resource";
                 $fileName = explode('/', $item);
@@ -368,6 +311,7 @@ class SwoftInit
                 file_put_contents($file, $viewContentTemp);
             }
         }
+        success();
     }
 }
 

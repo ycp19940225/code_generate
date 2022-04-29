@@ -112,7 +112,7 @@
     //获取列表操作
     let list = $('#list');
     getList(list, {
-        ajax: "<?php echo base_url('admin/demo/list');?>",
+        ajax: "<?php echo base_url('admin/[% module %]/list');?>",
     });
 
     //点击搜索操作
@@ -126,7 +126,7 @@
     $(document).on('click', '[data-operation="delete"]', function () {
         var name = $(this).data('name');
         let id = $(this).data('id');
-        tip('<?php echo base_url('admin/demo/delete');?>', {
+        tip('<?php echo base_url('admin/[% module %]/delete');?>', {
             'id': id,
         }, '确认要删除吗？', name, function (response_data) {
             list.dataTable().fnDraw();

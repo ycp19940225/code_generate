@@ -1,4 +1,4 @@
 <?php
-return $config = [
+$global_config = [
     'template_mark' => '[% mark %]',
 ];

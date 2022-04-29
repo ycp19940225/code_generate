@@ -4,13 +4,13 @@ namespace App\Model\Logic;
 
 use App\Model\Common\CommonLogic;
 
-class DemoLogic extends CommonLogic
+class [% Module %]Logic extends CommonLogic
 {
     const POOL = 'db.pool';
 
     const DB = '';
 
-    const TABLE = 'demo';
+    const TABLE = '[% module %]';
 
     /**
      * 新增

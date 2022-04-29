@@ -44,7 +44,7 @@
                             if(!empty($url)){
                                 echo $url;
                             }else{
-                                echo base_url('admin/demo/index');
+                                echo base_url('admin/[% module %]/index');
                             }
                             ?>" class="btn btn-light font-weight-bolder btn-sm">
                                 <i class="ki ki-bold-arrow-back icon-sm"></i> 返回</a>
@@ -106,7 +106,7 @@
                 validation.validate().then(function (status) {
                     if (status === 'Valid') {
                         addStatus = false;
-                        let url = "<?php echo base_url('admin/demo/editDo'); ?>";
+                        let url = "<?php echo base_url('admin/[% module %]/editDo'); ?>";
                         let params = serialize_object($("#preserve_form"));
                         $.axios.request('POST', url, params, function (response_data) {
                             if(response_data.status != 1) {

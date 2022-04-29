@@ -4,7 +4,7 @@ namespace App\Http\Controller;
 
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
-use App\Model\Logic\DemoLogic;
+use App\Model\Logic\[% Module %]Logic;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\Middleware;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
@@ -13,11 +13,11 @@ use Throwable;
 
 /**
  * [% title %]
- * Class DemoController
- * @Controller("/admin/demo")
+ * Class [% Module %]Controller
+ * @Controller("/admin/[% module %]")
  * @Middleware(AuthMiddleware::class)
  */
-class DemoController
+class [% Module %]Controller
 {
 
     /**
@@ -29,7 +29,7 @@ class DemoController
     public function index()
     {
         $data = [];
-        return view('Demo/index', $data);
+        return view('[% Module %]/index', $data);
     }
 
 
@@ -69,7 +69,7 @@ class DemoController
         }
 
 
-        $data = DemoLogic::getList($where, true);
+        $data = [% Module %]Logic::getList($where, true);
 
         if (!empty($data['data'])) {
             foreach ($data['data'] as $k => $r) {
@@ -78,7 +78,7 @@ class DemoController
                 $action = '';
 // template_handle_start,template_handle_end
 
-                $action .= get_icon('delete', ['id' => $r['id'], 'name' => $r['name'], 'operation' => 'delete']);
+                $action .= get_icon('delete', ['id' => $r['id'], 'name' => isset($r['name']) ? $r['name'] : $r['id'], 'operation' => 'delete']);
                 $data['aaData'][$k][] = $action;
             }
         }
@@ -102,15 +102,15 @@ class DemoController
             $updateData = [
 // template_edit_fields_start,template_edit_fields_end
             ];
-            $res[] = DemoLogic::edit(['id' => $data['id']], $updateData);
+            $res[] = [% Module %]Logic::edit(['id' => $data['id']], $updateData);
         } else {
             $insertData = [
 // template_add_fields_start,template_add_fields_end
             ];
-            $res[] = $id = DemoLogic::add($insertData);
+            $res[] = $id = [% Module %]Logic::add($insertData);
         }
         if (!in_array(false, $res)) {
-            return responseJson(1, '成功!', ['url' => base_url('admin/demo/index')]);
+            return responseJson(1, '成功!', ['url' => base_url('admin/[% module %]/index')]);
         } else {
             return responseJson(0, '失败');
         }
@@ -129,8 +129,8 @@ class DemoController
         if ($request->isPost()) {
             $request_data = $request->post();
             $id = (int)get_val_by_key($request_data, 'id');
-//            $query = DemoLogic::delete(['id' => $id,]);
-            $query = DemoLogic::edit(['id' => $id], ['status' => 9]);
+//            $query = [% Module %]Logic::delete(['id' => $id,]);
+            $query = [% Module %]Logic::edit(['id' => $id], ['status' => 9]);
             if ($query) {
                 return responseJson(1, '删除成功!');
             } else {

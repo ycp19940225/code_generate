@@ -30,4 +30,5 @@ class Func{
         $base = str_replace('\\','/',realpath(dirname(__FILE__).'/'))."/";
         return $base . $str;
     }
+
 }

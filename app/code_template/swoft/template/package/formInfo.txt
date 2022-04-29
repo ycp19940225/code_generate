@@ -1,0 +1,63 @@
+    //窗口添加
+    let preserve_modal = $('#preserve_modal');
+    let preserve_form = $('#preserve_form');
+    $(document).on('click', '#preserve', function () {
+        reset_form(preserve_form);
+        $('#preserve_title').html('添加');
+        $("#id").val('');
+        preserve_modal.modal();
+    });
+
+    //添加验证器
+    validation = form_validation('preserve_form', {
+<!--template_validate_start,template_validate_end-->
+        status: {
+            validators: {
+                notEmpty: {
+                    message: '请选择状态'
+                }
+            }
+        },
+    });
+    var addStatus = 1;
+    $('#preserve_form_submit').on('click', function (e) {
+        e.preventDefault();
+        if(addStatus){
+            validation.validate().then(function (status) {
+                if (status === 'Valid') {
+                    addStatus = false;
+                    let url = "<?php echo base_url('admin/[% module %]/editDo'); ?>";
+                    let params = serialize_object(preserve_form);
+                    $.axios.request('POST', url, params, function (response_data) {
+                        if(response_data.status != 1) {
+                            setTimeout(function () {
+                                addStatus = 1;
+                            }, 1500)
+                        }
+                        showMessage(response_data);
+                    });
+                }
+            })
+        }
+    })
+    //编辑
+    $(document).on('click', '[data-operation="edit"]', function () {
+        let key = $(this).data('id');
+
+        //获取管理员信息
+        let url = "<?php echo base_url('admin/[% module %]/edit'); ?>";
+        let params = {
+            id: key
+        };
+        $.axios.request('POST', url, params, function (response_data) {
+            $('#preserve_title').html('编辑');
+            reset_form(preserve_form);
+
+            let data = response_data.data;
+<!--template_form_info_start,template_form_info_end-->
+            preserve_form.find("input[name='id']").val(data.id);
+
+            preserve_form.find("select[name='status']").selectpicker('val', data.status);
+            preserve_modal.modal();
+        });
+    });
