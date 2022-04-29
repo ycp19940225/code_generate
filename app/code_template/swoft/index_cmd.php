@@ -1,7 +1,7 @@
 <?php
 namespace app\swoft;
 
-include_once './tool/func.php';
+include_once './tool/func_cmd.php';
 //var_dump(templateReplace('title'));exit;
 $baseDir = './gen_code';
 $controlTemplate = './template/controller/DemoController.php';
