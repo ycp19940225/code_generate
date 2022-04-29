@@ -139,4 +139,14 @@ class [% Module %]Controller
         }
         return responseJson(0, '删除失败!');
     }
+
+    /**
+     * 获取信息
+     * @RequestMapping()
+     */
+    public function getMaxIndexId()
+    {
+        $indexid = [% Module %]Logic::max([['status', '!=', '9'] ], 'indexid');
+        return responseJson(1, '操作成功', $indexid);
+    }
 }

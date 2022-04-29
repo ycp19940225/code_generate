@@ -3,9 +3,20 @@
     let preserve_form = $('#preserve_form');
     $(document).on('click', '#preserve', function () {
         reset_form(preserve_form);
-        $('#preserve_title').html('添加');
-        $("#id").val('');
-        preserve_modal.modal();
+                preserve_modal.find('#preserve_title').html('添加');
+                preserve_form.find("select[name='status']").val(1);
+                preserve_form.find("select[name='status']").selectpicker('val', 1);
+                preserve_form.find("input[name='id']").val('');
+                let url = "<?php echo base_url('admin/[% module %]/getMaxIndexId');?>";
+                $.axios.request('POST', url, {}, function (response_data) {
+                    let data = response_data.data
+                    preserve_modal.find('[name="indexid"]').val(data);
+                    preserve_modal.modal();
+                    setTimeout(function () {
+                        preserve_form.find("input").first().focus();
+                    }, 500)
+                    console.log(preserve_form.find("input[name='lid']"))
+                });
     });
 
     //添加验证器
