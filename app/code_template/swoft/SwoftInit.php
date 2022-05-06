@@ -2,7 +2,6 @@
 
 namespace App\code_template\swoft;
 
-
 use App\code_template\swoft\tool\Func;
 
 class SwoftInit
@@ -59,14 +58,7 @@ class SwoftInit
         $ConTroModule = $input['module_name'];
         $formType = $input['form_type'];
         $title = $input['title'];
-        $fields = $input['sql'];
-        $fields = explode(',', $fields);
-        $fieldsArray = [];
-        foreach ($fields as $field){
-            if(!empty($field)){
-                $fieldsArray[] = $check = trim($field);
-            }
-        }
+        $fieldsArray = $input['formInfo'];
 
         $baseDir = $this->baseDir;
         $controlTemplate = $this->controlTemplate;
@@ -98,38 +90,35 @@ class SwoftInit
         // 替换title
         $tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormValidateFields = [];
         foreach ($fieldsArray as $item) {
-            $desc = explode(' ', $item);
-            if (!empty($desc[0])) {
-                $str = str_replace('`', '', $desc[0]);
-                $strName = Func::searchStr($item);
-                // 列表字段
-                $tableFields[] = str_repeat(' ', 4 * 4) . '$data[\'aaData\'][$k][] = $r[\'' . $str . '\'];';
-                // 编辑字段
-                $editFields[] = str_repeat(' ', 4 * 4) . '\'' . $str . '\' => $data[\'' . $str . '\'],';
-                // 表格字段
-                $viewFields[] = str_repeat(' ', 11 * 4) . '<th >' . $strName . '</th>';
-                // 表单字段
-                $viewFormFields[] = str_repeat(' ', 5 * 4) . '<div class="form-group">
+            $str = $item['name'];
+            $strName = $item['field'];
+            // 列表字段
+            $tableFields[] = str_repeat(' ', 4 * 4) . '$data[\'aaData\'][$k][] = $r[\'' . $str . '\'];';
+            // 编辑字段
+            $editFields[] = str_repeat(' ', 4 * 4) . '\'' . $str . '\' => $data[\'' . $str . '\'],';
+            // 表格字段
+            $viewFields[] = str_repeat(' ', 11 * 4) . '<th >' . $strName . '</th>';
+            // 表单字段
+            $viewFormFields[] = str_repeat(' ', 5 * 4) . '<div class="form-group">
                         <label>' . $strName . '</label>
                         <input type="text" id="' . $str . '" name="' . $str . '" class="form-control" placeholder="请输入' . $strName . '"/>
                     </div>';
-                // 表单验证字段
-                $viewFormJsFields[] = str_repeat(' ', 2 * 4) . '' . $str . ': {
+            // 表单验证字段
+            $viewFormJsFields[] = str_repeat(' ', 2 * 4) . '' . $str . ': {
             validators: {
                 notEmpty: {
                     message: \'请选择' . $strName . '\'
                 }
             }
         },';
-                $viewFormEditFields[] = str_repeat(' ', 3 * 4) . 'preserve_form.find("input[name=\'' . $str . '\']").val(data.' . $str . ');';
-                // 跳转表单
-                $viewFormValidateFields[] = str_repeat(' ', 10 * 4) . '<div class="form-group col-lg-6">
+            $viewFormEditFields[] = str_repeat(' ', 3 * 4) . 'preserve_form.find("input[name=\'' . $str . '\']").val(data.' . $str . ');';
+            // 跳转表单
+            $viewFormValidateFields[] = str_repeat(' ', 10 * 4) . '<div class="form-group col-lg-6">
                                             <label>' . $strName . '<span class="text-danger">*</span></label>
                                             <div class="input-group">
                                                 <input type="text" id="' . $str . '" name="' . $str . '" class="form-control" placeholder="请输入' . $strName . '"/>
                                             </div>
                                         </div>';
-            }
         }
         $tableFieldsTemplate = implode(PHP_EOL, $tableFields);
         $controllerContentTemp = str_replace('// template_fields_start,template_fields_end', $tableFieldsTemplate, $controllerContentTemp);
@@ -164,7 +153,7 @@ class SwoftInit
             $controllerContentTemp = str_replace('// template_edit_start,template_edit_end', $editMethod, $controllerContentTemp);
         } else {
             $controllerContentTemp = str_replace('// template_handle_start,template_handle_end', $handle1, $controllerContentTemp);
-            $editMethod = '     /**
+            $editMethod = '/**
      * 编辑
      * @RequestMapping()
      * @param Request $request

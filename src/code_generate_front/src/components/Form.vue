@@ -19,22 +19,23 @@
             <el-input v-model="form.sql" type="textarea" @blur="createInputElement()"/>
         </el-form-item>
         <el-form-item
-                v-for="(info, index) in form.formInfo"
+                v-for="(item, index) in form.formInfo"
                 :key="index"
-                :label="info.label"
-                :prop="info.name"
-                :rules="info.rules"
+                :label="item.label"
+                :prop="item.name"
+                :rules="item.rules"
         >
             <el-form :inline="true" class="">
                 <el-form-item label="字段名">
-                    <el-input v-model="info.value" placeholder="请输入字段名" />
+                    <el-input v-model="item.field" placeholder="请输入字段名" />
                 </el-form-item>
                 <el-form-item label="字段值">
-                    <el-input v-model="info.value" placeholder="请输入字段值" />
+                    <el-input v-model="item.name" placeholder="请输入字段值" />
                 </el-form-item>
                 <el-form-item label="字段类型">
-                    <el-select v-model="info.value" placeholder="请选择字段类型">
-                        <el-option label="文本" value="input" />
+                    <el-select v-model="item.type" placeholder="请选择字段类型">
+                        <el-option label="文本" value="text" />
+                        <el-option label="数字" value="number" />
                         <el-option label="选择" value="select" />
                         <el-option label="日期" value="date" />
                         <el-option label="单选" value="radio" />
@@ -44,11 +45,13 @@
                         <el-option label="富文本" value="rich_textarea" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="是否为空">
-                    <el-select v-model="info.value" placeholder="是否为空">
-                        <el-option label="文本" value="input" />
-                        <el-option label="文本" value="input" />
-                    </el-select>
+                <el-form-item label="可选项">
+                    <el-checkbox-group v-model="item.extraData">
+                        <el-checkbox label="form" name="type" >表单</el-checkbox>
+                        <el-checkbox label="required" name="type">必填</el-checkbox>
+                        <el-checkbox label="list" name="type">列表</el-checkbox>
+                        <el-checkbox label="search" name="type">搜索</el-checkbox>
+                    </el-checkbox-group>
                 </el-form-item>
             </el-form>
         </el-form-item>
@@ -60,7 +63,8 @@
 
 <script lang="ts" setup>
     import { reactive } from 'vue'
-    import { post } from '../http/http'
+    import { post } from '../tools/http/http'
+    import { empty } from '../tools/tools'
     import { ElNotification } from "element-plus";
     // do not use same name with ref
     const form = reactive({
@@ -69,24 +73,7 @@
         form_type: '',
         title: '',
         sql: '',
-        formInfo: [{
-            label:'test',
-            prop:'ss',
-            name:'test',
-            rules:{
-               
-            },
-        },
-            {
-                label:'test',
-                prop:'ss',
-                name:'test',
-                rules:{
-
-                },
-
-            }
-        ],
+        formInfo: [],
     })
 
     const onSubmit = () => {
@@ -104,23 +91,54 @@
 
     function createInputElement(){
         let data = form.sql;
-        data = data.toString().split(',');
         data = formatString(data);
-        console.log(data)
         let inputElement = [];
         for(let i = 0; i < data.length; i++){
-            inputElement.push([
+            let item = data[i];
+            let itemArray = item.split(' ');
+            let name = itemArray[0];
+            let field = /COMMENTs?(.*?)$/.exec(item);
+            field = !empty(field[1]) ? field[1] : '';
+            let type = itemArray[1];
+            type = getInputType(type)
+            inputElement.push({
+                label:`字段${i+1}`,
+                prop:'',
+                rules:{
 
-            ])
+                },
+                name : name,
+                field : field,
+                type : type,
+                extraData : ['form', 'required', 'list'],
+            })
+            form.formInfo = inputElement
         }
     }
 
+    function getInputType(type){
+        let res = '';
+        if(/int/.test(type)){
+            res = 'number';
+        }
+        if(/varchar/.test(type)){
+            res = 'text';
+        }
+        return res;
+    }
     function formatString(str){
+        str = str.split(',');
+        let res = [];
         for(let i = 0; i < str.length; i++){
             let temp = str[i];
             temp = temp.replace('/\n/g', '')
-            str[i] = temp.trim()
+            temp = temp.trim()
+            temp = temp.replace(/`/g, '');
+            temp = temp.replace(/'/g, '');
+            if(!empty(temp)){
+                res.push(temp)
+            }
         }
-        return str;
+        return res;
     }
 </script>
