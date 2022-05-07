@@ -82,9 +82,8 @@ if(!function_exists('templateReplace')){
                 $config = [
                     "$item" => "[% $item %]",
                 ];
-                $subject = str_replace($config[$item], $replace[$item], $subject);
+                $subject = str_replace($config[$item], $replace[$key], $subject);
             }
-
             return $subject;
         }else{
             $config = [
