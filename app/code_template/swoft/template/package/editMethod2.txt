@@ -1,0 +1,19 @@
+    /**
+     * 编辑
+     * @RequestMapping()
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws Throwable
+     */
+    public function edit(Request $request, Response $response)
+    {
+        $id = $request->input('id', '');
+        $data = [];
+        if (!empty($id)) {
+            $data = [% Module %]Logic::getInfo(['id' => $id]);
+            return view('[% module %]/form_edit', $data);
+        }else{
+            return view('[% module %]/form_add', $data);
+        }
+    }

@@ -1,0 +1,13 @@
+     /**
+     * 编辑
+     * @RequestMapping()
+     * @param Request $request
+     * @param Response $response
+     * @return array
+     */
+    public function edit(Request $request, Response $response)
+    {
+        $id = $request->input('id', '');
+        $data = [% Module %]Logic::getInfo(['id' => $id]);
+        return responseJson(1, '成功!', $data);
+    }

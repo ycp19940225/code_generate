@@ -91,34 +91,29 @@ class SwoftInit
         $tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormValidateFields = [];
         foreach ($fieldsArray as $item) {
             $str = $item['name'];
-            $strName = $item['field'];
-            // 列表字段
-            $tableFields[] = str_repeat(' ', 4 * 4) . '$data[\'aaData\'][$k][] = $r[\'' . $str . '\'];';
-            // 编辑字段
-            $editFields[] = str_repeat(' ', 4 * 4) . '\'' . $str . '\' => $data[\'' . $str . '\'],';
-            // 表格字段
-            $viewFields[] = str_repeat(' ', 11 * 4) . '<th >' . $strName . '</th>';
-            // 表单字段
-            $viewFormFields[] = str_repeat(' ', 5 * 4) . '<div class="form-group">
-                        <label>' . $strName . '</label>
-                        <input type="text" id="' . $str . '" name="' . $str . '" class="form-control" placeholder="请输入' . $strName . '"/>
-                    </div>';
-            // 表单验证字段
-            $viewFormJsFields[] = str_repeat(' ', 2 * 4) . '' . $str . ': {
-            validators: {
-                notEmpty: {
-                    message: \'请选择' . $strName . '\'
+            $strName = trim($item['field']);
+            if(in_array('form', $item['extraData'])){
+                // 编辑字段
+                $editFields[] = templateReplace('field', $str, getPackageTempLate('editFields'));
+                // 表单字段
+                $viewFormFields[] = templateReplace(['field', 'fieldName'], [$str, $strName], getPackageTempLate('viewFormFields'));
+                // 跳转表单
+                $viewFormEditFields[] = templateReplace('field', $str, getPackageTempLate('viewFormEditFields'));
+                if(in_array('required', $item['extraData'])){
+                    $fieldRequired = '<span class="text-danger">*</span>';
+                    // 表单验证字段
+                    $viewFormJsFields[] = templateReplace(['field', 'fieldName'], [$str, $strName], getPackageTempLate('viewFormJsFields'));
+                }else{
+                    $fieldRequired = '';
                 }
+                $viewFormValidateFields[] = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormValidateFields'));
             }
-        },';
-            $viewFormEditFields[] = str_repeat(' ', 3 * 4) . 'preserve_form.find("input[name=\'' . $str . '\']").val(data.' . $str . ');';
-            // 跳转表单
-            $viewFormValidateFields[] = str_repeat(' ', 10 * 4) . '<div class="form-group col-lg-6">
-                                            <label>' . $strName . '<span class="text-danger">*</span></label>
-                                            <div class="input-group">
-                                                <input type="text" id="' . $str . '" name="' . $str . '" class="form-control" placeholder="请输入' . $strName . '"/>
-                                            </div>
-                                        </div>';
+            if(in_array('list', $item['extraData'])){
+                // 列表字段
+                $tableFields[] = templateReplace('field', $str, getPackageTempLate('tableFields'));
+                // 表格字段
+                $viewFields[] = templateReplace('fieldName', $strName, getPackageTempLate('viewFields'));
+            }
         }
         $tableFieldsTemplate = implode(PHP_EOL, $tableFields);
         $controllerContentTemp = str_replace('// template_fields_start,template_fields_end', $tableFieldsTemplate, $controllerContentTemp);
@@ -131,47 +126,16 @@ class SwoftInit
         $handle1 = templateReplace('module', strtolower($module), $handle1);
         $handle2 = '                $action .= get_icon(\'edit\', [\'id\' => $r[\'id\'], \'operation\' => \'edit\']);';
 
-
         /***************************************************************controller***************************************************************/
         if ($formType == 1) {
             $controllerContentTemp = str_replace('// template_handle_start,template_handle_end', $handle2, $controllerContentTemp);
-            $editMethod = '     /**
-     * 编辑
-     * @RequestMapping()
-     * @param Request $request
-     * @param Response $response
-     * @return array
-     */
-    public function edit(Request $request, Response $response)
-    {
-        $id = $request->input(\'id\', \'\');
-        $data = [% Module %]Logic::getInfo([\'id\' => $id]);
-        return responseJson(1, \'成功!\', $data);
-    }';
+            $editMethod = getPackageTempLate('editMethod');
             $editMethod = templateReplace('Module', $class, $editMethod);
             $editMethod = templateReplace('module', $class, $editMethod);
             $controllerContentTemp = str_replace('// template_edit_start,template_edit_end', $editMethod, $controllerContentTemp);
         } else {
             $controllerContentTemp = str_replace('// template_handle_start,template_handle_end', $handle1, $controllerContentTemp);
-            $editMethod = '/**
-     * 编辑
-     * @RequestMapping()
-     * @param Request $request
-     * @param Response $response
-     * @return Response
-     * @throws Throwable
-     */
-    public function edit(Request $request, Response $response)
-    {
-        $id = $request->input(\'id\', \'\');
-        $data = [];
-        if (!empty($id)) {
-            $data = [% Module %]Logic::getInfo([\'id\' => $id]);
-            return view(\'[% module %]/form_edit\', $data);
-        }else{
-            return view(\'[% module %]/form_add\', $data);
-        }
-    }';
+            $editMethod = getPackageTempLate('editMethod2');
             $editMethod = templateReplace('Module', $class, $editMethod);
             $editMethod = templateReplace('module', $class, $editMethod);
             $controllerContentTemp = str_replace('// template_edit_start,template_edit_end', $editMethod, $controllerContentTemp);

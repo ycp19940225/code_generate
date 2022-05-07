@@ -1,0 +1,7 @@
+                '[% field %]': {
+                    validators: {
+                        notEmpty: {
+                            message: '请选择[% fieldName %]'
+                        }
+                    }
+                },

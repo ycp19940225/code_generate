@@ -77,12 +77,21 @@ if(!function_exists('templateReplace')){
      * @return false|string
      */
     function templateReplace($search, $replace, $subject ){
-        $config = [
-            'Module' => '[% Module %]',
-            'module' => '[% module %]',
-            'title' => '[% title %]',
-        ];
-        return str_replace($config[$search], $replace, $subject);
+        if(is_array($search)){
+            foreach ($search as $key => $item){
+                $config = [
+                    "$item" => "[% $item %]",
+                ];
+                $subject = str_replace($config[$item], $replace[$item], $subject);
+            }
+
+            return $subject;
+        }else{
+            $config = [
+                "$search" => "[% $search %]",
+            ];
+            return str_replace($config[$search], $replace, $subject);
+        }
     }
 }
 
