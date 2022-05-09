@@ -52,7 +52,7 @@
                                             <div class="row align-items-center">
                                                 <div class="col-md-12 my-2 my-md-0">
                                                     <div class="">
-                                                        <input type="text" class="form-control dt_search" placeholder="昵称 / 手机号" id="s_keywords" name="s_keywords">
+                                                        <input type="text" class="form-control dt_search" placeholder="名称" id="s_keywords" name="s_keywords">
                                                     </div>
                                                 </div>
                                             </div>
@@ -76,7 +76,7 @@
                                     </div>
                                 </div>
                                 <div class="table-responsive">
-                                    <table class="table table-head-custom table-vertical-center" id="list">
+                                    <table class="table table-head-custom table-vertical-center" id="list_[% module %]">
                                         <thead>
                                         <tr class="text-left">
                                             <th style="width: 5%;">ID</th>
@@ -110,14 +110,14 @@
 <script>
 
     //获取列表操作
-    let list = $('#list');
-    getList(list, {
+    let list_[% module %] = $('#list_[% module %]');
+    getList(list_[% module %], {
         ajax: "<?php echo base_url('admin/[% module %]/list');?>",
     });
 
     //点击搜索操作
     $('#search_button').on('click', function () {
-        list.dataTable().fnDraw();
+        list_[% module %].dataTable().fnDraw();
     });
 
     //表单页面添加
@@ -129,7 +129,7 @@
         tip('<?php echo base_url('admin/[% module %]/delete');?>', {
             'id': id,
         }, '确认要删除吗？', name, function (response_data) {
-            list.dataTable().fnDraw();
+            list_[% module %].dataTable().fnDraw();
             showMessage(response_data, false);
         })
     })

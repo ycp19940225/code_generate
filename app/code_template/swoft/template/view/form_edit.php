@@ -57,7 +57,7 @@
                 <div class="d-flex flex-column-fluid">
                     <!--begin::Container-->
                     <div class="container">
-                        <form class="form" method="post" action="" id="preserve_form">
+                        <form class="form" method="post" action="" id="preserve_form_[% module %]">
                             <input type="hidden" name="id" value="<?=$id?>">
                             <div class="card card-custom">
                                 <div class="card-header">
@@ -71,7 +71,7 @@
                                 <div class="card-footer">
                                     <div class="row">
                                         <div class="col-lg-6">
-                                            <button type="button" class="btn btn-primary mr-2 submit">保存</button>
+                                            <button type="button" class="btn btn-primary mr-2 submit_[% module %]">保存</button>
                                         </div>
                                     </div>
                                 </div>
@@ -97,27 +97,30 @@
 <?php $this->include('Common/js') ?>
 <script>
     //添加验证器
-    var validation = form_validation('preserve_form', {
+    var validation_[% module %] = form_validation('preserve_form_[% module %]', {
 <!--template_validate_start,template_validate_end-->
     });
     $(function () {
-        // 表单赋值
-        if(!empty("<?=$id?>")){
-            $("select[name='status']").val(<?=$status?>);
-            $("select").selectpicker('refresh')
+        // 初始化题目数据
+        function initPage(data) {
+            [% viewFormEditValue %]
+            $("#id").val(data.id);
         }
-        var addStatus = 1;
-        $(".submit").click(function () {
-            if(addStatus){
-                validation.validate().then(function (status) {
+        $(function () {
+            initPage(<?php echo json_encode($data, 256);?>);
+        })
+        var addStatus_[% module %] = 1;
+        $(".submit_[% module %]").click(function () {
+            if(addStatus_[% module %]){
+                validation_[% module %].validate().then(function (status) {
                     if (status === 'Valid') {
-                        addStatus = false;
+                        addStatus_[% module %] = false;
                         let url = "<?php echo base_url('admin/[% module %]/editDo'); ?>";
-                        let params = serialize_object($("#preserve_form"));
+                        let params = serialize_object($("#preserve_form_[% module %]"));
                         $.axios.request('POST', url, params, function (response_data) {
                             if(response_data.status != 1) {
                                 setTimeout(function () {
-                                    addStatus = 1;
+                                    addStatus_[% module %] = 1;
                                 }, 1500)
                             }
                             showMessage(response_data);

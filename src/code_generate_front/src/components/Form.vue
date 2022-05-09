@@ -45,6 +45,12 @@
                         <el-option label="富文本" value="rich_textarea" />
                     </el-select>
                 </el-form-item>
+                <el-form-item label="下拉框选项">
+                    <el-checkbox-group v-model="item.extraData">
+                        <el-checkbox label="form_select_search" name="type">下拉多选搜索</el-checkbox>
+                        <el-checkbox label="form_select_search" name="type">下拉搜索</el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
                 <el-form-item label="可选项">
                     <el-checkbox-group v-model="item.extraData">
                         <el-checkbox label="form" name="type" >表单</el-checkbox>
@@ -62,7 +68,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { reactive } from 'vue'
+    import { reactive, watch } from 'vue'
     import { post } from '../tools/http/http'
     import { empty } from '../tools/tools'
     import { ElNotification } from "element-plus";
@@ -75,7 +81,12 @@
         sql: '',
         formInfo: [],
     })
-
+    //还有第二种写法
+    watch(() => form.formInfo, (newValue, oldValue) => {
+        // 因为watch被观察的对象只能是getter/effect函数、ref、热active对象或者这些类型是数组
+        // 所以需要将state.count变成getter函数
+        console.log(newValue, oldValue)
+    })
     const onSubmit = () => {
         let url = '/api/test';
         post(url, form).then(function (res){

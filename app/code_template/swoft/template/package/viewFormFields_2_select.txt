@@ -1,0 +1,10 @@
+                                            <div class="form-group col-lg-4">
+                                                <label>[% fieldName %][% fieldRequired %]</label>
+                                                <select class="form-control selectpicker" id="[% field %]" name="[% field %]" data-show-tick="true" data-live-search="true" title="请选择[% fieldName %]" multiple>
+                                                    <?php if(!empty($[% field %]List)): ?>
+                                                        <?php foreach ($[% field %]List as $key => [% field %]): ?>
+                                                            <option value="<?=[% field %]['id']?>"><?=[% field %]['name']?></option>
+                                                        <?php endforeach;?>
+                                                    <?php endif;?>
+                                                </select>
+                                            </div>

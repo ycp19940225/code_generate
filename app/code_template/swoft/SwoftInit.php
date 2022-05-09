@@ -91,22 +91,34 @@ class SwoftInit
         $tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormValidateFields = [];
         foreach ($fieldsArray as $item) {
             $str = $item['name'];
+            // 表单类型
+            $type = $item['type'];
             $strName = trim($item['field']);
             if(in_array('form', $item['extraData'])){
-                // 编辑字段
+                // 控制器编辑字段
                 $editFields[] = templateReplace('field', $str, getPackageTempLate('editFields'));
-                // 表单字段
+                // 表单字段（弹窗1）
                 $viewFormFields[] = templateReplace(['field', 'fieldName'], [$str, $strName], getPackageTempLate('viewFormFields'));
-                // 跳转表单
+                // 表单编辑赋值字段（弹窗1）
                 $viewFormEditFields[] = templateReplace('field', $str, getPackageTempLate('viewFormEditFields'));
                 if(in_array('required', $item['extraData'])){
                     $fieldRequired = '<span class="text-danger">*</span>';
-                    // 表单验证字段
+                    // 表单验证字段js
                     $viewFormJsFields[] = templateReplace(['field', 'fieldName'], [$str, $strName], getPackageTempLate('viewFormJsFields'));
                 }else{
                     $fieldRequired = '';
                 }
-                $viewFormValidateFields[] = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormValidateFields'));
+                // 表单字段（页面2）
+                switch ($type){
+                    case 'text':
+                        $viewFormFields_2[] = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2'));
+                        break;
+                    default:
+                        $viewFormFields_2[] = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2_' . $type));
+                        break;
+                }
+                // 表单编辑赋值（页面2）
+                $viewFormEditValue[] = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormEditValue'));
             }
             if(in_array('list', $item['extraData'])){
                 // 列表字段
@@ -230,6 +242,12 @@ class SwoftInit
                                                     <i class="la la-plus-circle"></i> 添加
                                                 </a>';
                     $viewContentTemp = str_replace('<!--template_button_start,template_button_end-->', $button, $viewContentTemp);
+                }
+
+                if ($key == 2) {
+                    // 替换表单初始化
+                    $viewFormEditValueTemplate = implode(PHP_EOL, $viewFormEditValue);
+                    $viewContentTemp = templateReplace('viewFormEditValue', $viewFormEditValueTemplate, $viewContentTemp);;
                 }
 
                 // 替换title

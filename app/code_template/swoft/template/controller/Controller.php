@@ -64,7 +64,7 @@ class [% Module %]Controller
         if (!empty($s_keywords)) {
             $where[] = [
                 'whereRaw',
-                "(title like '%{$s_keywords}%' or item_no like '%{$s_keywords}%')",
+                "(name like '%{$s_keywords}%')",
             ];
         }
 
