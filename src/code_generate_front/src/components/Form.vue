@@ -45,19 +45,41 @@
                         <el-option label="富文本" value="rich_textarea" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="下拉框选项">
-                    <el-checkbox-group v-model="item.extraData">
-                        <el-checkbox label="form_select_search" name="type">下拉多选搜索</el-checkbox>
-                        <el-checkbox label="form_select_search" name="type">下拉搜索</el-checkbox>
+                <el-form-item label="下拉框选项" v-if="item.type == 'select'">
+                    <el-checkbox-group v-model="item.selectExtraData">
+                        <el-checkbox label="form_select_search">下拉多选搜索</el-checkbox>
+                        <el-checkbox label="form_select_multiple">下拉搜索</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="可选项">
                     <el-checkbox-group v-model="item.extraData">
-                        <el-checkbox label="form" name="type" >表单</el-checkbox>
-                        <el-checkbox label="required" name="type">必填</el-checkbox>
-                        <el-checkbox label="list" name="type">列表</el-checkbox>
-                        <el-checkbox label="search" name="type">搜索</el-checkbox>
+                        <el-checkbox label="form" >表单</el-checkbox>
+                        <el-checkbox label="required">必填</el-checkbox>
+                        <el-checkbox label="list">列表</el-checkbox>
+                        <el-checkbox label="search">搜索</el-checkbox>
                     </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="选项" v-if="form.form_type == 2">
+                    <el-checkbox-group v-model="item.extraData">
+                        <el-checkbox label="form" >表单</el-checkbox>
+                        <el-checkbox label="required">必填</el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="单选选项" v-if="item.type == 'radio'">
+                    <el-row :gutter="20">
+                        <el-col :span="5">
+                            <el-input v-model="item.radioName_1" placeholder="请输入选项1名" />
+                        </el-col>
+                        <el-col :span="5">
+                            <el-input v-model="item.radioValue_1" placeholder="请输入选项1值" />
+                        </el-col>
+                        <el-col :span="5">
+                            <el-input v-model="item.radioName_2" placeholder="请输入选项2名" />
+                        </el-col>
+                        <el-col :span="5">
+                            <el-input v-model="item.radioValue_2" placeholder="请输入选项2值" />
+                        </el-col>
+                    </el-row>
                 </el-form-item>
             </el-form>
         </el-form-item>

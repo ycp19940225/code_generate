@@ -1,4 +1,4 @@
-                                        <div class="form-group col-lg-6">
+                                        <div class="form-group [% fieldCol %]">
                                                 <label>[% fieldName %][% fieldRequired %]</label>
                                                 <div class="input-group">
                                                     <input type="text" id="[% field %]" name="[% field %]" class="form-control" placeholder="请输入[% fieldName %]"/>

@@ -1,0 +1,15 @@
+                                            <div class="form-group [% fieldCol %]">
+                                                <label>[% fieldName %][% fieldRequired %]</label>
+                                                <div class="form-radio radio-inline" style="margin-top: 0.8rem;">
+                                                    <label class="radio radio-outline">
+                                                        <input type="radio" name="[% field %]" value="[% radioValue_1 %]" checked/>
+                                                        <span></span>
+                                                        [% radioName_1 %]
+                                                    </label>
+                                                    <label class="radio radio-outline">
+                                                        <input type="radio" name="[% field %]" value="[% radioValue_1 %]"/>
+                                                        <span></span>
+                                                        [% radioName_2 %]
+                                                    </label>
+                                                </div>
+                                            </div>

@@ -97,8 +97,7 @@ class SwoftInit
             if(in_array('form', $item['extraData'])){
                 // 控制器编辑字段
                 $editFields[] = templateReplace('field', $str, getPackageTempLate('editFields'));
-                // 表单字段（弹窗1）
-                $viewFormFields[] = templateReplace(['field', 'fieldName'], [$str, $strName], getPackageTempLate('viewFormFields'));
+
                 // 表单编辑赋值字段（弹窗1）
                 $viewFormEditFields[] = templateReplace('field', $str, getPackageTempLate('viewFormEditFields'));
                 if(in_array('required', $item['extraData'])){
@@ -111,12 +110,46 @@ class SwoftInit
                 // 表单字段（页面2）
                 switch ($type){
                     case 'text':
-                        $viewFormFields_2[] = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2'));
+                        $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2'));
                         break;
                     default:
-                        $viewFormFields_2[] = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2_' . $type));
+                        switch ($type){
+                            case 'select':
+                                if(in_array('form_select_search', $item['selectExtraData'])){
+                                    $form_select_search = 'data-live-search="true"';
+                                }else{
+                                    $form_select_search = '';
+                                }
+                                if(in_array('form_select_multiple', $item['selectExtraData'])){
+                                    $form_select_multiple = 'multiple';
+                                }else{
+                                    $form_select_multiple = '';
+                                }
+                                $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'search', 'multiple'], [$str, $strName, $fieldRequired, $form_select_search, $form_select_multiple], getPackageTempLate('viewFormFields_2_' . $type));
+                                break;
+                            case 'radio':
+                                if(!empty($item['type']['radioExtraData'])){
+                                    $radioValue_1 = $item['radioValue_1'];
+                                    $radioName_1 = $item['radioName_1'];
+                                    $radioValue_2 = $item['radioValue_2'];
+                                    $radioName_2 = $item['radioName_2'];
+                                }else{
+                                    $radioValue_1 = '1';
+                                    $radioName_1 = '是';
+                                    $radioValue_2 = '2';
+                                    $radioName_2 = '否';
+                                }
+                                $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'radioValue_1', 'radioName_1', 'radioValue_2', 'radioName_2'], [$str, $strName, $radioValue_1, $radioName_1, $radioValue_2, $radioName_2], getPackageTempLate('viewFormFields_2_' . $type));
+                                break;
+                            default:
+                                $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2_' . $type));
+                                break;
+                        }
                         break;
                 }
+                // 表单字段（弹窗1）
+                $viewFormFields[] = templateReplace('fieldCol', '', $viewFormFieldsTemp);
+                $viewFormFields_2[] = templateReplace('fieldCol', 'col-lg-6', $viewFormFieldsTemp);
                 // 表单编辑赋值（页面2）
                 $viewFormEditValue[] = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormEditValue'));
             }

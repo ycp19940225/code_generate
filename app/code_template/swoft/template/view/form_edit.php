@@ -131,6 +131,7 @@
         });
     });
 </script>
+[% extJsData%]
 </body>
 <!--end::Body-->
 </html>

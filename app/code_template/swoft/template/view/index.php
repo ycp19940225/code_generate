@@ -109,6 +109,13 @@
 <?php $this->include('Common/js') ?>
 <script>
 
+    $(".datepicker").datepicker({
+        toggleActive: true,
+        autoclose: true,
+        format: "yyyy-mm-dd",
+        language: "zh-CN"
+    });
+
     //获取列表操作
     let list_[% module %] = $('#list_[% module %]');
     getList(list_[% module %], {
@@ -134,6 +141,7 @@
         })
     })
 </script>
+[% extJsData%]
 </body>
 <!--end::Body-->
 </html>
