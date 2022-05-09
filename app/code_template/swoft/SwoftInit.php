@@ -88,7 +88,7 @@ class SwoftInit
             $controllerContentTemp = templateReplace('title', $title, $controllerContentTemp);
         }
         // 替换title
-        $tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormValidateFields = [];
+        $tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormFields_2 = [];
         foreach ($fieldsArray as $item) {
             $str = $item['name'];
             // 表单类型
@@ -292,7 +292,7 @@ class SwoftInit
 
 
                 // 替换form字段
-                $viewFieldsTemplate = implode(PHP_EOL, $viewFormValidateFields);
+                $viewFieldsTemplate = implode(PHP_EOL, $viewFormFields_2);
                 $viewContentTemp = str_replace('<!--template_form_filed_start,template_form_filed_end-->', $viewFieldsTemplate, $viewContentTemp);
 
                 // 替换form_js字段
