@@ -1,0 +1,6 @@
+    $(".datepicker").datepicker({
+        toggleActive: true,
+        autoclose: true,
+        format: "yyyy-mm-dd",
+        language: "zh-CN"
+    });

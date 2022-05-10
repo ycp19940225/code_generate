@@ -1,0 +1,15 @@
+                                            <div class="form-group [% fieldCol %]">
+                                                <label>[% fieldName %][% fieldRequired %]<small>(尺寸：707*280)</small></label>
+                                                <div class="row">
+                                                    <div class="col-lg-7">
+                                                        <div class="form-group">
+                                                            <input type="hidden" name="[% field %]" class="img" value="">
+                                                            <input type="file" class="hidden_upload_img_button" style="display: none">
+                                                            <div>
+                                                                <img src="/default_upload.jpg"
+                                                                     class="img-fluid img-thumbnail show_upload_img" style="max-width: 250px;max-height: 150px"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>

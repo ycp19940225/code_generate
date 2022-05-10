@@ -41,6 +41,7 @@
                         <el-option label="单选" value="radio" />
                         <el-option label="复选" value="checkbox" />
                         <el-option label="文本" value="textarea" />
+                        <el-option label="图片" value="image" />
                         <el-option label="文件" value="file" />
                         <el-option label="富文本" value="rich_textarea" />
                     </el-select>

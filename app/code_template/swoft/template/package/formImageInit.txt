@@ -1,0 +1,12 @@
+    // 上传图片
+    $("body").on('click', '.show_upload_img', function () {
+        $(this).parent().parent().find('.hidden_upload_img_button').click();
+    });
+
+    $("body").on('change', '.hidden_upload_img_button', function () {
+        let that = $(this);
+        upload_img(that, 'commonImage/[% ConTroModule %]/[% module %]/image/','', function (err, data) {
+            that.parent().find('.show_upload_img').attr('src', data.Location);
+            that.parent().find('.img').val(data.Location);
+        });
+    });

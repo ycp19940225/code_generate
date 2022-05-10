@@ -101,11 +101,14 @@
 <!--template_validate_start,template_validate_end-->
     });
     $(function () {
-        // 表单赋值
-        if(!empty("<?=$id?>")){
-            $("select[name='status']").val(<?=$status?>);
-            $("select").selectpicker('refresh')
+        // 初始化题目数据
+        function initPage(data) {
+            [% viewFormEditValue %]
+            $("#id").val(data.id);
         }
+        $(function () {
+            initPage(<?php echo json_encode($data, 256);?>);
+        })
         var addStatus_[% module %] = 1;
         $(".submit_[% module %]").click(function () {
             if(addStatus_[% module %]){
@@ -128,6 +131,7 @@
         });
     });
 </script>
+[% extJsData%]
 </body>
 <!--end::Body-->
 </html>

@@ -2,8 +2,6 @@
 
 namespace App\code_template\swoft;
 
-use App\code_template\swoft\tool\Func;
-
 class SwoftInit
 {
 
@@ -89,6 +87,7 @@ class SwoftInit
         }
         // 替换title
         $tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormFields_2 = [];
+        $extJsData = ['<script>'];
         foreach ($fieldsArray as $item) {
             $str = $item['name'];
             // 表单类型
@@ -141,6 +140,12 @@ class SwoftInit
                                 }
                                 $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'radioValue_1', 'radioName_1', 'radioValue_2', 'radioName_2'], [$str, $strName, $radioValue_1, $radioName_1, $radioValue_2, $radioName_2], getPackageTempLate('viewFormFields_2_' . $type));
                                 break;
+                            case 'date':
+                                $extJsData[] = getPackageTempLate('formDateInit');
+                                break;
+                            case 'image':
+                                $extJsData[] = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2_' . $type));
+                                break;
                             default:
                                 $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2_' . $type));
                                 break;
@@ -160,6 +165,7 @@ class SwoftInit
                 $viewFields[] = templateReplace('fieldName', $strName, getPackageTempLate('viewFields'));
             }
         }
+        $extJsData[] = '</script>';
         $tableFieldsTemplate = implode(PHP_EOL, $tableFields);
         $controllerContentTemp = str_replace('// template_fields_start,template_fields_end', $tableFieldsTemplate, $controllerContentTemp);
         // 替换编辑添加字段

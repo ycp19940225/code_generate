@@ -2,8 +2,8 @@
                                                 <label>[% fieldName %][% fieldRequired %]</label>
                                                 <select class="form-control selectpicker" id="[% field %]" name="[% field %]" data-show-tick="true" [% search %] data-none-results-text="没有匹配的结果" title="请选择[% fieldName %]" [% multiple %]>
                                                     <?php if(!empty($[% field %]List)): ?>
-                                                        <?php foreach ($[% field %]List as $key => [% field %]): ?>
-                                                            <option value="<?=[% field %]['id']?>"><?=[% field %]['name']?></option>
+                                                        <?php foreach ($[% field %]List as $key => $[% field %]): ?>
+                                                            <option value="<?=$[% field %]['id']?>"><?=$[% field %]['name']?></option>
                                                         <?php endforeach;?>
                                                     <?php endif;?>
                                                 </select>
