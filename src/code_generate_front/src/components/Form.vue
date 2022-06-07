@@ -111,7 +111,7 @@
         console.log(newValue, oldValue)
     })
     const onSubmit = () => {
-        let url = '/api/test';
+        let url = '/api/run';
         post(url, form).then(function (res){
             if(res.status == 1){
                 ElNotification({
@@ -132,7 +132,7 @@
             let itemArray = item.split(' ');
             let name = itemArray[0];
             let field = /COMMENTs?(.*?)$/.exec(item);
-            field = !empty(field[1]) ? field[1] : '';
+            field = !empty(field) ? field[1] : '';
             let type = itemArray[1];
             type = getInputType(type)
             inputElement.push({
