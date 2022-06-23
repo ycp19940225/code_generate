@@ -1,0 +1,9 @@
+                                        <div class="col-lg-2 col-xl-2">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-12 my-2 my-md-0">
+                                                    <div class="">
+                                                        <input type="text" class="form-control dt_search" placeholder="[% fieldName %]" id="[% field %]" name="[% field %]">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>

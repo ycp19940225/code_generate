@@ -1,0 +1,9 @@
+                                        <div class="col-lg-2 col-xl-2">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-12 my-2 my-md-0">
+                                                     <select class="form-control dt_search selectpicker" id="[% field %]" name="[% field %]" data-show-tick="true" title="所有[% fieldName %]">
+                                                                                <option value="-1" selected>所有[% fieldName %]</option>
+                                                     </select>
+                                                </div>
+                                            </div>
+                                        </div>

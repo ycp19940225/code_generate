@@ -48,6 +48,7 @@
                             <div class="card-body">
                                 <div class="mb-7">
                                     <div class="row align-items-center">
+                                        [% indexSearchFieldsTemplate %]
                                         <div class="col-lg-2 col-xl-2">
                                             <div class="row align-items-center">
                                                 <div class="col-md-12 my-2 my-md-0">

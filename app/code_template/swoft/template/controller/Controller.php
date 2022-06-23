@@ -67,6 +67,7 @@ class [% Module %]Controller
                 "(name like '%{$s_keywords}%')",
             ];
         }
+[% extraListSearch %]
 
 
         $data = [% Module %]Logic::getList($where, true);
@@ -78,7 +79,6 @@ class [% Module %]Controller
                 $action = '';
 // template_handle_start,template_handle_end
 
-                $action .= get_icon('delete', ['id' => $r['id'], 'name' => isset($r['name']) ? $r['name'] : $r['id'], 'operation' => 'delete']);
                 $data['aaData'][$k][] = $action;
             }
         }
@@ -149,4 +149,6 @@ class [% Module %]Controller
         $indexid = [% Module %]Logic::max([['status', '!=', '9'] ], 'indexid');
         return responseJson(1, '操作成功', $indexid);
     }
+
+[% extraMethod %]
 }

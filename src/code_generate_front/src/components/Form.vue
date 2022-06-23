@@ -15,6 +15,12 @@
         <el-form-item label="页面标题">
             <el-input v-model="form.title" />
         </el-form-item>
+        <el-form-item label="关联页(展示页)">
+            <el-radio-group v-model="form.show_page">
+                <el-radio label="0">无</el-radio>
+                <el-radio label="1">有</el-radio>
+            </el-radio-group>
+        </el-form-item>
         <el-form-item label="sql">
             <el-input v-model="form.sql" type="textarea" @blur="createInputElement()"/>
         </el-form-item>
@@ -40,7 +46,7 @@
                         <el-option label="日期" value="date" />
                         <el-option label="单选" value="radio" />
                         <el-option label="复选" value="checkbox" />
-                        <el-option label="文本" value="textarea" />
+                        <el-option label="多行文本" value="textarea" />
                         <el-option label="图片" value="image" />
                         <el-option label="文件" value="file" />
                         <el-option label="富文本" value="rich_textarea" />
@@ -48,8 +54,8 @@
                 </el-form-item>
                 <el-form-item label="下拉框选项" v-if="item.type == 'select'">
                     <el-checkbox-group v-model="item.selectExtraData">
-                        <el-checkbox label="form_select_search">下拉多选搜索</el-checkbox>
-                        <el-checkbox label="form_select_multiple">下拉搜索</el-checkbox>
+                        <el-checkbox label="form_select_search">多选</el-checkbox>
+                        <el-checkbox label="form_select_multiple">搜索</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="可选项">
@@ -131,7 +137,7 @@
             let item = data[i];
             let itemArray = item.split(' ');
             let name = itemArray[0];
-            let field = /COMMENTs?(.*?)$/.exec(item);
+            let field = /COMMENT\s?(.*?)$/.exec(item);
             field = !empty(field) ? field[1] : '';
             let type = itemArray[1];
             type = getInputType(type)

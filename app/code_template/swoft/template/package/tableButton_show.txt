@@ -1,0 +1,1 @@
+$action .= get_icon('delete', ['id' => $r['id'], 'name' => isset($r['name']) ? $r['name'] : $r['id'], 'operation' => 'delete']);

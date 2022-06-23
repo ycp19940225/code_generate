@@ -1,0 +1,17 @@
+    /**
+     * 查看
+     * @RequestMapping()
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     * @throws Throwable
+     */
+    public function show(Request $request, Response $response)
+    {
+        $id = $request->input('id', '');
+        if (!empty($id)) {
+            $data = [% Module %]Logic::getInfo(['id' => $id]);
+            $data['tagsList'] = [% Module %]Logic::getList(['lid' => $id, ['status', '!=', 9]], false);
+            return view('[% Module %]/form_edit', $data);
+        }
+    }
