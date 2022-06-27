@@ -1,0 +1,3 @@
+<button type="button" class="btn btn-primary" id="[% module %]_preserve">
+                                                    <i class="la la-plus-circle"></i> 添加
+                                                </button>

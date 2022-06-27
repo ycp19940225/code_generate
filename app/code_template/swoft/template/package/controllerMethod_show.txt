@@ -12,6 +12,6 @@
         if (!empty($id)) {
             $data = [% Module %]Logic::getInfo(['id' => $id]);
             $data['tagsList'] = [% Module %]Logic::getList(['lid' => $id, ['status', '!=', 9]], false);
-            return view('[% Module %]/form_edit', $data);
+            return view('[% Module %]/show', $data);
         }
     }

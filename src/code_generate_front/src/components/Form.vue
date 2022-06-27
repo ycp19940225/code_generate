@@ -104,10 +104,11 @@
     // do not use same name with ref
     const form = reactive({
         module: '',
-        module_name: '',
+        module_name: 'admin',
         form_type: '',
         title: '',
         sql: '',
+        show_page: '0',
         formInfo: [],
     })
     //还有第二种写法

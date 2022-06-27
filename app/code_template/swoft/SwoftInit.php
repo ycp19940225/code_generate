@@ -57,7 +57,7 @@ class SwoftInit
         $ConTroModule = $input['module_name'];
         $formType = $input['form_type'];
         $title = $input['title'];
-        $showPage = !empty($input['show_page']) ? $input['show_page'] : 1;
+        $showPage = !empty($input['show_page']) ? $input['show_page'] : 0;
         $fieldsArray = $input['formInfo'];
 
         $baseDir = $this->baseDir;
@@ -109,7 +109,14 @@ class SwoftInit
                 if(in_array('required', $item['extraData'])){
                     $fieldRequired = '<span class="text-danger">*</span>';
                     // 表单验证字段js
-                    $viewFormJsFields[] = templateReplace(['field', 'fieldName'], [$str, $strName], getPackageTempLate('viewFormJsFields'));
+                    if($type == 'select'){
+                        $fieldTip = '选择';
+                    }else if($type == 'image'){
+                        $fieldTip = '上传';
+                    }else{
+                        $fieldTip = '填写';
+                    }
+                    $viewFormJsFields[] = templateReplace(['field', 'fieldName', 'fieldTip'], [$str, $strName, $fieldTip], getPackageTempLate('viewFormJsFields'));
                 }else{
                     $fieldRequired = '';
                 }
@@ -121,12 +128,12 @@ class SwoftInit
                     default:
                         switch ($type){
                             case 'select':
-                                if(in_array('form_select_search', $item['selectExtraData'])){
+                                if(!empty($item['selectExtraData']) && in_array('form_select_search', $item['selectExtraData'])){
                                     $form_select_search = 'data-live-search="true"';
                                 }else{
                                     $form_select_search = '';
                                 }
-                                if(in_array('form_select_multiple', $item['selectExtraData'])){
+                                if(!empty($item['selectExtraData']) && in_array('form_select_multiple', $item['selectExtraData'])){
                                     $form_select_multiple = 'multiple';
                                 }else{
                                     $form_select_multiple = '';
@@ -155,7 +162,7 @@ class SwoftInit
                                 $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2_' . $type));
                                 break;
                             default:
-                                $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2_' . $type));
+                                $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2'));
                                 break;
                         }
                         break;
@@ -179,9 +186,24 @@ class SwoftInit
                     $indexSearchFields[] = templateReplace(['field', 'fieldName'], [$str, $strName], getPackageTempLate('indexSearch_' . $type));
                     // 控制器搜索
                     $controllerSearchFields[] = templateReplace(['field', 'fieldName'], [$str, $strName], getPackageTempLate('controllerSearch'));
-                    $controllerContentTemp = templateReplace('extraListSearch', $str, $controllerContentTemp);
+
                 }
             }
+            if($str == 'indexid'){
+                $sortAble = 'indexid';
+            }
+        }
+
+        if(!empty($controllerSearchFields)){
+            $controllerSearchFields = implode(PHP_EOL, $controllerSearchFields);
+            $controllerContentTemp = templateReplace('extraListSearch', $controllerSearchFields, $controllerContentTemp);
+        }else{
+            $controllerContentTemp = templateReplace('extraListSearch', '', $controllerContentTemp);
+        }
+        if(!empty($sortAble)){
+            $controllerContentTemp = templateReplace('sortFields', "'indexid desc'", $controllerContentTemp);
+        }else{
+            $controllerContentTemp = templateReplace('sortFields', "'id desc'", $controllerContentTemp);
         }
         $extJsData[] = '</script>';
         $tableFieldsTemplate = implode(PHP_EOL, $tableFields);
@@ -195,21 +217,21 @@ class SwoftInit
         $handle1 = templateReplace('module', strtolower($module), $handle1);
         $handle2 = getPackageTempLate('tableButton_edit_type_2');
 
-        $handle = '';
+        $handle = [];
         // 详情页
         if($showPage == 1){
-            $handle .= getPackageTempLate('tableButton_show');
+            $handle[] = templateReplace('module', strtolower($module), getPackageTempLate('tableButton_show'));
         }
         if ($formType == 1) {
-            $handle .= $handle2;
+            $handle[] = $handle2;
         }else{
-            $handle .= $handle1;
+            $handle[] = $handle1;
         }
 
-        $handle .= getPackageTempLate('tableButton_delete');
-
+        $handle[]= templateReplace('module', strtolower($module), getPackageTempLate('tableButton_delete'));
 
         /***************************************************************controller***************************************************************/
+        $handle = implode(PHP_EOL, $handle);
         if ($formType == 1) {
             $controllerContentTemp = str_replace('// template_handle_start,template_handle_end', $handle, $controllerContentTemp);
             $editMethod = getPackageTempLate('editMethod');
@@ -234,6 +256,8 @@ class SwoftInit
         if(!empty($extraMethod)){
             $extraMethod = implode('', $extraMethod);
             $controllerContentTemp = templateReplace('extraMethod', $extraMethod, $controllerContentTemp);
+        }else{
+            $controllerContentTemp = templateReplace('extraMethod', '', $controllerContentTemp);
         }
 
         $controllerDir = "$baseDir\app\Http\Controller\Admin";
@@ -267,9 +291,7 @@ class SwoftInit
                 copy($item, $tempDir);
                 $viewContentTemp = file_get_contents($tempDir);
                 // 替换操作按钮
-                $button = '<button type="button" class="btn btn-primary" id="preserve">
-                                                    <i class="la la-plus-circle"></i> 添加
-                                                </button>';
+                $button = templateReplace(['module'], [$module], getPackageTempLate('indexButton_add'));
                 $viewContentTemp = str_replace('<!--template_button_start,template_button_end-->', $button, $viewContentTemp);
 
                 // 替换title
@@ -296,15 +318,19 @@ class SwoftInit
                 }
                 $viewJsForm = str_replace('<!--template_validate_start,template_validate_end-->', $viewFormJsTemplate, $formInfo);
                 $viewJsForm = str_replace('<!--template_form_info_start,template_form_info_end-->', $viewFormEditFields, $viewJsForm);
-                $viewContentTemp = str_replace('<!--template_form_js_start,template_form_js_end-->', $viewJsForm, $viewContentTemp);
+                $viewContentTemp = templateReplace('template_form_js', $viewJsForm, $viewContentTemp);
 
-
+                //图片日期等js 加载
+                if(!empty($extJsData)){
+                    $extJsDataTemplate = implode(PHP_EOL, $extJsData);
+                    $extJsDataTemplate = templateReplace('ConTroModule', $ConTroModule, $extJsDataTemplate);
+                    $viewContentTemp = templateReplace('extJsData', $extJsDataTemplate, $viewContentTemp);
+                }
                 // 搜索
                 if(!empty($indexSearchFields)){
                     $indexSearchFieldsTemplate = implode(PHP_EOL, $indexSearchFields);
                     $viewContentTemp = templateReplace('indexSearchFieldsTemplate', $indexSearchFieldsTemplate, $viewContentTemp);
                 }
-
 
                 // 最后统一替换模块名称
                 $viewContentTemp = templateReplace('Module', $class, $viewContentTemp);

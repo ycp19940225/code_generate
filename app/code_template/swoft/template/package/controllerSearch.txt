@@ -1,5 +1,5 @@
         // [% fieldName %]
         $[% field %] = get_val_by_key($request_data, '[% field %]', -1);
-        if($type != -1){
-            $where['course.[% field %]'] = $[% field %];
+        if($[% field %] != -1){
+            $where['[% field %]'] = $[% field %];
         }

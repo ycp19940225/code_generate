@@ -70,7 +70,7 @@ class [% Module %]Controller
 [% extraListSearch %]
 
 
-        $data = [% Module %]Logic::getList($where, true);
+        $data = [% Module %]Logic::getList($where, true, [% sortFields %]);
 
         if (!empty($data['data'])) {
             foreach ($data['data'] as $k => $r) {

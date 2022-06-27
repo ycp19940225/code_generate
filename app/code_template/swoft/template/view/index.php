@@ -129,7 +129,7 @@
     });
 
     //表单页面添加
-    <!--template_form_js_start,template_form_js_end-->
+    [% template_form_js %]
     //删除
     $(document).on('click', '[data-operation="delete"]', function () {
         var name = $(this).data('name');
@@ -142,7 +142,7 @@
         })
     })
 </script>
-[% extJsData%]
+[% extJsData %]
 </body>
 <!--end::Body-->
 </html>
