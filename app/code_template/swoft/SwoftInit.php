@@ -330,6 +330,8 @@ class SwoftInit
                 if(!empty($indexSearchFields)){
                     $indexSearchFieldsTemplate = implode(PHP_EOL, $indexSearchFields);
                     $viewContentTemp = templateReplace('indexSearchFieldsTemplate', $indexSearchFieldsTemplate, $viewContentTemp);
+                }else{
+                    $viewContentTemp = templateReplace('indexSearchFieldsTemplate', '', $viewContentTemp);
                 }
 
                 // 最后统一替换模块名称
@@ -388,9 +390,9 @@ class SwoftInit
                 if(!empty($indexSearchFields)){
                     $indexSearchFieldsTemplate = implode(PHP_EOL, $indexSearchFields);
                     $viewContentTemp = templateReplace('indexSearchFieldsTemplate', $indexSearchFieldsTemplate, $viewContentTemp);
+                }else{
+                    $viewContentTemp = templateReplace('indexSearchFieldsTemplate', '', $viewContentTemp);
                 }
-
-
 
 
                 $viewContentTemp = templateReplace('Module', $class, $viewContentTemp);
