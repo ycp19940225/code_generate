@@ -38,6 +38,7 @@
                 <el-form-item label="字段值">
                     <el-input v-model="item.name" placeholder="请输入字段值" />
                 </el-form-item>
+
                 <el-form-item label="字段类型">
                     <el-select v-model="item.type" placeholder="请选择字段类型">
                         <el-option label="文本" value="text" />
@@ -88,10 +89,14 @@
                         </el-col>
                     </el-row>
                 </el-form-item>
+                <el-form-item>
+                    <el-button class="mt-2" @click.prevent="removeDomain(item)">删除</el-button>
+                </el-form-item>
             </el-form>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" @click="onSubmit">Create</el-button>
+            <el-button @click="addDomain">增加项</el-button>
+            <el-button type="primary" @click="onSubmit">创建</el-button>
         </el-form-item>
     </el-form>
 </template>
@@ -130,6 +135,29 @@
         })
     }
 
+
+    const removeDomain = (item) => {
+        const index = form.formInfo.indexOf(item)
+        if (index !== -1) {
+            form.formInfo.splice(index, 1)
+        }
+    }
+
+    const addDomain = () => {
+        let i = form.formInfo.length;
+        form.formInfo.push({
+            label:`字段${i+1}`,
+            prop:'',
+            rules:{
+
+            },
+            name : '',
+            field : '',
+            type : 'text',
+            extraData : ['form', 'required', 'list'],
+        })
+    }
+
     function createInputElement(){
         let data = form.sql;
         data = formatString(data);
@@ -141,7 +169,7 @@
             let field = /COMMENT\s?(.*?)$/.exec(item);
             field = !empty(field) ? field[1] : '';
             let type = itemArray[1];
-            type = getInputType(type)
+            type = getInputType(type);
             inputElement.push({
                 label:`字段${i+1}`,
                 prop:'',
@@ -159,20 +187,21 @@
 
     function getInputType(type){
         let res = '';
-        if(/int/.test(type)){
+        if(/(?=(int|decimal))/.test(type)){
             res = 'number';
-        }
-        if(/varchar/.test(type)){
+        }else if(/(?=(varchar|text))/.test(type)){
+            res = 'text';
+        }else{
             res = 'text';
         }
         return res;
     }
     function formatString(str){
-        str = str.split(',');
+        str = str.split(',\n');
         let res = [];
         for(let i = 0; i < str.length; i++){
             let temp = str[i];
-            temp = temp.replace('/\n/g', '')
+            temp = temp.replace('/\n/g', '');
             temp = temp.trim()
             temp = temp.replace(/`/g, '');
             temp = temp.replace(/'/g, '');

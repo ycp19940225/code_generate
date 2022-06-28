@@ -65,9 +65,11 @@ class SwoftInit
         $logicTemplate = $this->logicTemplate;
         if ($formType == 1) {
             $viewTemplate[] = $this->viewTemplate[0];
-            $viewTemplate[] = $this->viewTemplate[3];
         }else{
             $viewTemplate = $this->viewTemplate;
+        }
+        if($showPage != 1){
+            unset($viewTemplate[3]);
         }
         $tempDir = $this->tempDir;
 
@@ -95,6 +97,7 @@ class SwoftInit
         // 替换title
         $tableFields = $editFields = $viewFields = $viewFormFields = $viewFormJsFields = $viewFormFields_2 = [];
         $extJsData = ['<script>'];
+        $countDate = $countImage = 0;
         foreach ($fieldsArray as $item) {
             $str = $item['name'];
             // 表单类型
@@ -155,11 +158,17 @@ class SwoftInit
                                 $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'radioValue_1', 'radioName_1', 'radioValue_2', 'radioName_2'], [$str, $strName, $radioValue_1, $radioName_1, $radioValue_2, $radioName_2], getPackageTempLate('viewFormFields_2_' . $type));
                                 break;
                             case 'date':
-                                $extJsData[] = getPackageTempLate('formDateInit');
+                                if($countDate == 0){
+                                    $extJsData[] = getPackageTempLate('formDateInit');
+                                }
+                                $countDate++;
                                 break;
                             case 'image':
-                                $extJsData[] = getPackageTempLate('formImageInit');
-                                $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2_' . $type));
+                                if($countImage == 0){
+                                    $extJsData[] = getPackageTempLate('formImageInit');
+                                    $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2_' . $type));
+                                }
+                                $countImage++;
                                 break;
                             default:
                                 $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired'], [$str, $strName, $fieldRequired], getPackageTempLate('viewFormFields_2'));
