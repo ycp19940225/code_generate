@@ -147,8 +147,13 @@ class SwoftInit
                                 }else{
                                     $form_select_multiple = '';
                                 }
+                                if(!empty($item['selectExtraData']) && in_array('selectAll', $item['selectExtraData'])){
+                                    $form_select_all = 'data-actions-box="true" data-deselect-all-text="取消" data-select-all-text="全选" ';
+                                }else{
+                                    $form_select_all = '';
+                                }
                                 if($str != 'status'){
-                                    $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'search', 'multiple'], [$str, $strName, $fieldRequired, $form_select_search, $form_select_multiple], getPackageTempLate('viewFormFields_2_' . $type));
+                                    $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'search', 'multiple', 'all'], [$str, $strName, $fieldRequired, $form_select_search, $form_select_multiple, $form_select_all], getPackageTempLate('viewFormFields_2_' . $type));
                                 }else{
                                     $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'search', 'multiple'], [$str, $strName, $fieldRequired, $form_select_search, $form_select_multiple], getPackageTempLate('viewFormFields_2_' . $type . '_status'));
                                 }
@@ -167,6 +172,8 @@ class SwoftInit
                                 }
                                 $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'radioValue_1', 'radioName_1', 'radioValue_2', 'radioName_2'], [$str, $strName, $radioValue_1, $radioName_1, $radioValue_2, $radioName_2], getPackageTempLate('viewFormFields_2_' . $type));
                                 break;
+                            /*case 'checkbox':
+                                break;*/
                             case 'date':
                                 if($countDate == 0){
                                     $extJsData[] = getPackageTempLate('formDateInit');

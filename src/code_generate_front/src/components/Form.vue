@@ -58,8 +58,9 @@
                 </el-form-item>
                 <el-form-item label="下拉框选项" v-if="item.type == 'select'">
                     <el-checkbox-group v-model="item.selectExtraData">
-                        <el-checkbox label="form_select_search">多选</el-checkbox>
-                        <el-checkbox label="form_select_multiple">搜索</el-checkbox>
+                        <el-checkbox label="form_select_search">支持多选</el-checkbox>
+                        <el-checkbox label="form_select_all">全选按钮</el-checkbox>
+                        <el-checkbox label="form_select_multiple">加入搜索</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="可选项">
