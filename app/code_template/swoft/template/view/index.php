@@ -45,7 +45,7 @@
                     <!--begin::Container-->
                     <div class="container">
                         <div class="card card-custom">
-                            <div class="card-body">
+                            <div class="card-body" style="min-height: 540px;">
                                 <div class="mb-7">
                                     <div class="row align-items-center">
                                         [% indexSearchFieldsTemplate %]

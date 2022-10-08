@@ -63,7 +63,7 @@
                                 <div class="card-header">
                                     <h3 class="card-title">基本信息</h3>
                                 </div>
-                                <div class="card-body pb-0">
+                                <div class="card-body pb-0" style="min-height: 540px;">
                                     <div class="form-group row">
 <!--template_form_filed_start,template_form_filed_end-->
                                     </div>
