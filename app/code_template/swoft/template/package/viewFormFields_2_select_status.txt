@@ -1,0 +1,8 @@
+                                            <div class="form-group [% fieldCol %]">
+                                                <label>[% fieldName %][% fieldRequired %]</label>
+                                                <select class="form-control selectpicker" id="[% field %]" name="[% field %]" data-show-tick="true" [% search %] data-none-results-text="没有匹配的结果" title="请选择[% fieldName %]" [% multiple %]>
+                                                    <option value="1">显示</option>
+                                                    <option value="2">测试</option>
+                                                    <option value="0">隐藏</option>
+                                                </select>
+                                            </div>

@@ -1,5 +1,8 @@
 <template>
-    <el-form :model="form" label-width="120px">
+    <el-form :model="form" label-width="120px" >
+        <el-form-item label="目标程序地址">
+            <el-input v-model="form.file_path" />
+        </el-form-item>
         <el-form-item label="模块名">
             <el-input v-model="form.module" />
         </el-form-item>
@@ -99,6 +102,7 @@
             <el-button type="primary" @click="onSubmit">创建</el-button>
         </el-form-item>
     </el-form>
+
 </template>
 
 <script lang="ts" setup>
@@ -108,6 +112,7 @@
     import { ElNotification } from "element-plus";
     // do not use same name with ref
     const form = reactive({
+        file_path: '',
         module: '',
         module_name: 'admin',
         form_type: '',

@@ -253,8 +253,6 @@
     <!--end::Page-->
 </div>
 <!--end::Main-->
-<script>
-
 </body>
 </html>
 

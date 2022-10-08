@@ -50,6 +50,9 @@ class SwoftInit
 //        if(empty($module)){
 //            $input = json_decode(file_get_contents('php://input'), true);
 //        }
+        if(!empty($input['file_path']) && file_exists($input['file_path'])){
+            $this->baseDir = $input['file_path'];
+        }
         $module = $input['module'];
         if(empty($module)){
            error('必传参数module!');
@@ -65,6 +68,9 @@ class SwoftInit
         $logicTemplate = $this->logicTemplate;
         if ($formType == 1) {
             $viewTemplate[] = $this->viewTemplate[0];
+            if($showPage == 1){
+                $viewTemplate[] = $this->viewTemplate[3];
+            }
         }else{
             $viewTemplate = $this->viewTemplate;
         }
@@ -141,7 +147,11 @@ class SwoftInit
                                 }else{
                                     $form_select_multiple = '';
                                 }
-                                $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'search', 'multiple'], [$str, $strName, $fieldRequired, $form_select_search, $form_select_multiple], getPackageTempLate('viewFormFields_2_' . $type));
+                                if($str != 'status'){
+                                    $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'search', 'multiple'], [$str, $strName, $fieldRequired, $form_select_search, $form_select_multiple], getPackageTempLate('viewFormFields_2_' . $type));
+                                }else{
+                                    $viewFormFieldsTemp = templateReplace(['field', 'fieldName', 'fieldRequired', 'search', 'multiple'], [$str, $strName, $fieldRequired, $form_select_search, $form_select_multiple], getPackageTempLate('viewFormFields_2_' . $type . '_status'));
+                                }
                                 break;
                             case 'radio':
                                 if(!empty($item['type']['radioExtraData'])){
@@ -184,7 +194,11 @@ class SwoftInit
             }
             if(in_array('list', $item['extraData'])){
                 // 列表字段
-                $tableFields[] = templateReplace('field', $str, getPackageTempLate('tableFields'));
+                if($str != 'status'){
+                    $tableFields[] = templateReplace('field', $str, getPackageTempLate('tableFields'));
+                }else{
+                    $tableFields[] = templateReplace('field', $str, getPackageTempLate('tableFields'. '_' . $str));
+                }
                 // 表格字段
                 $viewFields[] = templateReplace('fieldName', $strName, getPackageTempLate('viewFields'));
             }
