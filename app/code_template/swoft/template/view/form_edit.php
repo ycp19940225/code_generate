@@ -118,12 +118,10 @@
                         let url = "<?php echo base_url('admin/[% module %]/editDo'); ?>";
                         let params = serialize_object($("#preserve_form_[% module %]"));
                         $.axios.request('POST', url, params, function (response_data) {
-                            if(response_data.status != 1) {
-                                setTimeout(function () {
-                                    addStatus_[% module %] = 1;
-                                }, 1500)
-                            }
                             showMessage(response_data);
+                            setTimeout(function () {
+                                addStatus_[% module %] = 1;
+                            }, 1500)
                         });
                     }
                 })
@@ -131,7 +129,7 @@
         });
     });
 </script>
-[% extJsData%]
+[% extJsData %]
 </body>
 <!--end::Body-->
 </html>

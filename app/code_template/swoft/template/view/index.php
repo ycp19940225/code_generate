@@ -80,9 +80,9 @@
                                     <table class="table table-head-custom table-vertical-center" id="list_[% module %]">
                                         <thead>
                                         <tr class="text-left">
-                                            <th style="width: 5%;">ID</th>
+                                            <th style="50px">ID</th>
 <!--template_view_fields_start,template_view_fields_end-->
-                                            <th style="width: 5%;">操作</th>
+                                            <th style="120px">操作</th>
                                         </tr>
                                         </thead>
                                         <tbody></tbody>

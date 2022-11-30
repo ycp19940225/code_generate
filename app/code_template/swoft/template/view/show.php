@@ -253,6 +253,12 @@
     <!--end::Page-->
 </div>
 <!--end::Main-->
+<script>
+    $(function () {
+
+    });
+</script>
+[% extJsData %]
 </body>
 </html>
 
