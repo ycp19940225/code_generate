@@ -76,7 +76,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="table-responsive">
+                                <div class="table-responsive" style="min-height: 600px">
                                     <table class="table table-head-custom table-vertical-center" id="list_[% module %]">
                                         <thead>
                                         <tr class="text-left">
