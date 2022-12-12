@@ -355,6 +355,8 @@ class SwoftInit
                     $extJsDataTemplate = implode(PHP_EOL, $extJsData);
                     $extJsDataTemplate = templateReplace('ConTroModule', $ConTroModule, $extJsDataTemplate);
                     $viewContentTemp = templateReplace('extJsData', $extJsDataTemplate, $viewContentTemp);
+                }else{
+                    $viewContentTemp = templateReplace('extJsData', '', $viewContentTemp);
                 }
                 // 搜索
                 if(!empty($indexSearchFields)){
@@ -392,6 +394,8 @@ class SwoftInit
                                                     <i class="la la-plus-circle"></i> 添加
                                                 </a>';
                     $viewContentTemp = str_replace('<!--template_button_start,template_button_end-->', $button, $viewContentTemp);
+
+                    $viewContentTemp = templateReplace('template_form_js', '', $viewContentTemp);
                 }
 
                 if ($key == 2) {
@@ -415,6 +419,15 @@ class SwoftInit
                 // 替换form_js字段
                 $viewFieldsTemplate = implode(PHP_EOL, $viewFormJsFields);
                 $viewContentTemp = str_replace('<!--template_validate_start,template_validate_end-->', $viewFieldsTemplate, $viewContentTemp);
+
+                //图片日期等js 加载
+                if(!empty($extJsData) && ($key == 1 || $key == 2)){
+                    $extJsDataTemplate = implode(PHP_EOL, $extJsData);
+                    $extJsDataTemplate = templateReplace('ConTroModule', $ConTroModule, $extJsDataTemplate);
+                    $viewContentTemp = templateReplace('extJsData', $extJsDataTemplate, $viewContentTemp);
+                }else{
+                    $viewContentTemp = templateReplace('extJsData', '', $viewContentTemp);
+                }
 
                 // 搜索
                 if(!empty($indexSearchFields)){
