@@ -65,6 +65,17 @@
                                 <div class="card-body pb-0" style="min-height: 540px;">
                                     <div class="form-group row">
 <!--template_form_filed_start,template_form_filed_end-->
+                                        <div class="form-group col-6">
+                                            <label>状态<span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <select class="form-control selectpicker"  name="status" data-show-tick="true"
+                                                        title="请选择状态">
+                                                    <option value="1" selected>显示</option>
+                                                    <option value="2">测试</option>
+                                                    <option value="0">隐藏</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-footer">
