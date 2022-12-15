@@ -79,7 +79,6 @@ class SwoftInit
         }
         $tempDir = $this->tempDir;
 
-
         copy($controlTemplate, $tempDir);
 
         $controllerContent = file_get_contents($tempDir);
@@ -369,8 +368,6 @@ class SwoftInit
                 // 最后统一替换模块名称
                 $viewContentTemp = templateReplace('Module', $class, $viewContentTemp);
                 $viewContentTemp = templateReplace('module', strtolower($module), $viewContentTemp);
-
-
 
                 $viewDir = "$baseDir\/resource";
                 $fileName = explode('/', $item);

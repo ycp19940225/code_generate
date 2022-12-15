@@ -46,7 +46,7 @@
                     <el-select v-model="item.type" placeholder="请选择字段类型">
                         <el-option label="文本" value="text" />
                         <el-option label="数字" value="number" />
-                        <el-option label="选择" value="select" />
+                        <el-option label="选择/下拉" value="select" />
                         <el-option label="日期" value="date" />
                         <el-option label="单选" value="radio" />
                         <el-option label="复选" value="checkbox" />
