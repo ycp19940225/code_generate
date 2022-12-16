@@ -255,7 +255,17 @@
 <!--end::Main-->
 <script>
     $(function () {
+        //获取列表操作
+        let list_[% module %] = $('#list_[% module %]');
+        getList(list_[% module %], {
+            ajax: "<?php echo base_url('admin/[% module %]/list');?>" + "?id=" + "<?=$data['id']?>",
+                autoWidth:false,
+        });
 
+        //点击搜索操作
+        $('#search_button').on('click', function () {
+            list_[% module %].dataTable().fnDraw();
+        });
     });
 </script>
 [% extJsData %]
