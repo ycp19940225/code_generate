@@ -82,6 +82,7 @@
                                         <tr class="text-left">
                                             <th style="width: 30px">ID</th>
 <!--template_view_fields_start,template_view_fields_end-->
+                                            <th style="width: 70px">状态</th>
                                             <th style="width: 120px">操作</th>
                                         </tr>
                                         </thead>
@@ -130,7 +131,7 @@
     });
 
     //表单页面添加
-    [% template_form_js %]
+[% template_form_js %]
     //删除
     $(document).on('click', '[data-operation="delete"]', function () {
         var name = $(this).data('name');

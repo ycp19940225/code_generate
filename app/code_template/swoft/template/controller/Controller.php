@@ -76,9 +76,9 @@ class [% Module %]Controller
             foreach ($data['data'] as $k => $r) {
                 $data['aaData'][$k][] = $r['id'];
 // template_fields_start,template_fields_end
+                $data['aaData'][$k][] = getStatusTitle($r['status']);
                 $action = '';
 // template_handle_start,template_handle_end
-
                 $data['aaData'][$k][] = $action;
             }
         }
@@ -101,11 +101,13 @@ class [% Module %]Controller
         if (!empty($data['id'])) { //编辑
             $updateData = [
 // template_edit_fields_start,template_edit_fields_end
+                'status' => $data['status'],
             ];
             $res[] = [% Module %]Logic::edit(['id' => $data['id']], $updateData);
         } else {
             $insertData = [
 // template_add_fields_start,template_add_fields_end
+                'status' => $data['status'],
             ];
             $res[] = $id = [% Module %]Logic::add($insertData);
         }
